@@ -1,0 +1,58 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "4422e08309d41fc83cf64a54dcb2939b",
+    "content-hash": "31a20aac94a0bf669fb9f43440f5104e",
+    "packages": [
+        {
+            "name": "thefrozenfire/swagger",
+            "version": "2.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TheFrozenFire/PHP-Swagger-Parser.git",
+                "reference": "8007be78295f5a3f174f7e18421a9f6604067edf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TheFrozenFire/PHP-Swagger-Parser/zipball/8007be78295f5a3f174f7e18421a9f6604067edf",
+                "reference": "8007be78295f5a3f174f7e18421a9f6604067edf",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7.22",
+                "satooshi/php-coveralls": "~0.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Swagger": "src/"
+                },
+                "classmap": [
+                    "tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Justin Martin",
+                    "email": "frozenfire@thefrozenfire.com"
+                }
+            ],
+            "description": "Swagger parser for PHP",
+            "time": "2015-09-23 22:52:23"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": []
+}

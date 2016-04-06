@@ -8,5 +8,19 @@ namespace Jacobemerick\Talus;
 
 class Talus
 {
-    public function __construct() {}
+
+    protected $config;
+
+    /**
+     * @param array $config
+     */
+    public function __construct(array $config)
+    {
+        $this->config = $config;
+    }
+
+    public function run()
+    {
+        // do stuff
+    }
 }

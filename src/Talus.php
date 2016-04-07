@@ -6,17 +6,43 @@
 
 namespace Jacobemerick\Talus;
 
-class Talus
+use InvalidArgumentException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+
+class Talus implements LoggerAwareInterface
 {
 
-    protected $config;
+    /** @var LoggerInterface */
+    protected $logger;
 
     /**
      * @param array $config
      */
     public function __construct(array $config)
     {
-        $this->config = $config;
+        if (!empty($config['logger'])) {
+            if (!($config['logger'] instanceof LoggerInterface)) {
+                throw new InvalidArgumentException('logger must be instance of LoggerInterface');
+            }
+            $this->logger = $config['logger'];
+        } else {
+            $this->logger = new NullLogger();
+        }
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    public function addMiddleware()
+    {
+        // add some middleware somehow
     }
 
     public function run()

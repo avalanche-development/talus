@@ -3,6 +3,7 @@
 namespace Jacobemerick\Talus;
 
 use PHPUnit_Framework_TestCase;
+use stdclass;
 
 class TalusTest extends PHPUnit_Framework_TestCase
 {
@@ -14,13 +15,47 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Jacobemerick\Talus\Talus', $talus);
     }
 
-    public function testConstructSetsConfig()
+    public function testTalusImplementsLoggerInterface()
     {
-        $config = [
-            'foo' => 'bar',
-        ];
-        $talus = new Talus($config);
+        $talus = new Talus([]);
 
-        $this->assertAttributeEquals($config, 'config', $talus);
+        $this->assertInstanceOf('Psr\Log\LoggerAwareInterface', $talus);
+    }
+
+    public function testConstructSetsNullLogger()
+    {
+        $talus = new Talus([]);
+
+        $this->assertAttributeInstanceOf('Psr\Log\NullLogger', 'logger', $talus);
+    }
+
+    public function testConstructSetsLogger()
+    {
+        $logger = $this->getMock('Psr\Log\LoggerInterface');
+        $talus = new Talus([
+            'logger' => $logger,
+        ]);
+
+        $this->assertAttributeSame($logger, 'logger', $talus);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testConstructValidatesLogger()
+    {
+        $logger = new stdclass();
+        $talus = new Talus([
+            'logger' => $logger,
+        ]);
+    }
+
+    public function testSetLogger()
+    {
+        $logger = $this->getMock('Psr\Log\LoggerInterface');
+        $talus = new Talus([]);
+        $talus->setLogger($logger);
+
+        $this->assertAttributeSame($logger, 'logger', $talus);
     }
 }

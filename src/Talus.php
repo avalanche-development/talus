@@ -67,7 +67,6 @@ class Talus implements LoggerAwareInterface
         while (!feof($resource)) {
             $spec .= fread($resource, 8192);
         }
-        fclose($resource);
 
         $spec = json_decode($spec);
         if (json_last_error() !== JSON_ERROR_NONE) {

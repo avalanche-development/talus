@@ -3,7 +3,9 @@
 namespace Jacobemerick\Talus;
 
 use PHPUnit_Framework_TestCase;
+use ReflectionClass;
 use stdclass;
+use Swagger\Document as SwaggerDocument;
 
 class TalusTest extends PHPUnit_Framework_TestCase
 {
@@ -65,6 +67,30 @@ class TalusTest extends PHPUnit_Framework_TestCase
             'logger' => $logger,
             'swagger' => $this->emptySwagger,
         ]);
+    }
+
+    /**
+     * @expectedException DomainException
+     */
+    public function testConstructRequiresSwagger()
+    {
+        $talus = new Talus([]);
+    }
+
+    public function testConstructSetsSwagger()
+    {
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
+        $reflectedSwaggerSpec->setAccessible(true);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        rewind($this->emptySwagger);
+        $spec = $reflectedSwaggerSpec->invokeArgs($talus, [$this->emptySwagger]);
+        $swagger = new SwaggerDocument($spec);
+
+        $this->assertAttributeEquals($swagger, 'swagger', $talus);
     }
 
     public function testSetLogger()

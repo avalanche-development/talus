@@ -14,7 +14,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->emptySwagger = fopen('php://memory', 'w+');
+        $this->emptySwagger = fopen('empty-swagger.json', 'w+');
         fwrite($this->emptySwagger, '{}');
         rewind($this->emptySwagger);
     }
@@ -59,6 +59,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage logger must be instance of LoggerInterface
      */
     public function testConstructValidatesLogger()
     {
@@ -93,6 +94,63 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($swagger, 'swagger', $talus);
     }
 
+    public function testGetSwaggerSpecReadable()
+    {
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
+        $reflectedSwaggerSpec->setAccessible(true);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+
+        $expectedSpec = (object) [
+            'key' => 'value',
+        ];
+        $encodedSpec = json_encode($expectedSpec);
+        $swagger = fopen('empty-swagger-readable.json', 'w+');
+        fwrite($swagger, $encodedSpec);
+        rewind($swagger);
+        $spec = $reflectedSwaggerSpec->invokeArgs($talus, [$swagger]);
+
+        $this->assertEquals($expectedSpec, $spec);
+
+        fclose($swagger);
+        unlink('empty-swagger-readable.json');
+    }
+
+    /**
+     * @expectedException DomainException
+     */
+    public function testGetSwaggerSpecNotReadable()
+    {
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
+        $reflectedSwaggerSpec->setAccessible(true);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        fclose($this->emptySwagger);
+
+        $expectedSpec = (object) [
+            'key' => 'value',
+        ];
+        $encodedSpec = json_encode($expectedSpec);
+        $swagger = fopen('empty-swagger-not-readable.json', 'w');
+        fwrite($swagger, $encodedSpec);
+        rewind($swagger);
+
+        try {
+            $reflectedSwaggerSpec->invokeArgs($talus, [$swagger]);
+        } catch (Exception $e) {
+            throw $e;
+        } finally {
+            fclose($swagger);
+            unlink('empty-swagger-not-readable.json');
+        }
+    }
+
     public function testSetLogger()
     {
         $logger = $this->getMock('Psr\Log\LoggerInterface');
@@ -106,7 +164,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $this->emptySwagger = fopen('php://memory', 'w');
+        $this->emptySwagger = fopen('empty-swagger.json', 'w');
         fclose($this->emptySwagger);
+        unlink('empty-swagger.json');
     }
 }

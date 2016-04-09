@@ -193,6 +193,34 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame($logger, 'logger', $talus);
     }
 
+    public function testGetRequest()
+    {
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedRequest = $reflectedTalus->getMethod('getRequest');
+        $reflectedRequest->setAccessible(true);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $request = $reflectedRequest->invoke($talus);
+
+        $this->assertInstanceOf('Psr\Http\Message\RequestInterface', $request);
+    }
+
+    public function testGetResponse()
+    {
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedResponse = $reflectedTalus->getMethod('getResponse');
+        $reflectedResponse->setAccessible(true);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $response = $reflectedResponse->invoke($talus);
+
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
+    }
+
     public function tearDown()
     {
         $this->emptySwagger = fopen('empty-swagger.json', 'w');

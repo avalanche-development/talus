@@ -72,6 +72,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException DomainException
+     * @expectedExceptionMessage missing swagger information
      */
     public function testConstructRequiresSwagger()
     {
@@ -121,6 +122,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException DomainException
+     * @expectedExceptionMessage swagger stream is not readable
      */
     public function testGetSwaggerSpecNotReadable()
     {
@@ -131,7 +133,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $talus = new Talus([
             'swagger' => $this->emptySwagger,
         ]);
-        fclose($this->emptySwagger);
 
         $expectedSpec = (object) [
             'key' => 'value',
@@ -148,6 +149,36 @@ class TalusTest extends PHPUnit_Framework_TestCase
         } finally {
             fclose($swagger);
             unlink('empty-swagger-not-readable.json');
+        }
+    }
+
+    /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage swagger stream is not parseable
+     */
+    public function testGetSwaggerSpecInvalidJson()
+    {
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
+        $reflectedSwaggerSpec->setAccessible(true);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        fclose($this->emptySwagger);
+
+        $content = 'words';
+        $swagger = fopen('empty-swagger-invalid-json.json', 'w+');
+        fwrite($swagger, $content);
+        rewind($swagger);
+
+        try {
+            $reflectedSwaggerSpec->invokeArgs($talus, [$swagger]);
+        } catch (Exception $e) {
+            throw $e;
+        } finally {
+            fclose($swagger);
+            unlink('empty-swagger-invalid-json.json');
         }
     }
 

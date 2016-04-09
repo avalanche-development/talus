@@ -8,10 +8,14 @@ namespace Jacobemerick\Talus;
 
 use DomainException;
 use InvalidArgumentException;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Swagger\Document as SwaggerDocument;
+use Zend\Diactoros\Response;
+use Zend\Diactoros\ServerRequestFactory;
 
 class Talus implements LoggerAwareInterface
 {
@@ -53,7 +57,7 @@ class Talus implements LoggerAwareInterface
     }
 
     /**
-     * @param streamable resource $resource
+     * @param streamable $resource
      * @return array
      */
     protected function getSwaggerSpec($resource)
@@ -90,6 +94,25 @@ class Talus implements LoggerAwareInterface
 
     public function run()
     {
+        $request = $this->getRequest();
+        $response = $this->getResponse();
+        $this->logger('got the request and response');
         // do stuff
+    }
+
+    /**
+     * @returns RequestInterface
+     */
+    protected function getRequest()
+    {
+        return ServerRequestFactory::fromGlobals();
+    }
+
+    /**
+     * @returns ResponseInterface
+     */
+    protected function getResponse()
+    {
+        return new Response();
     }
 }

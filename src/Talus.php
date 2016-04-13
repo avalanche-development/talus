@@ -14,6 +14,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Swagger\Document as SwaggerDocument;
+use Swagger\Object\Operation as SwaggerOperation;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -96,7 +97,9 @@ class Talus implements LoggerAwareInterface
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-        $this->logger('got the request and response');
+        $this->logger('built the request and response');
+
+        $operation = $this->getOperation($request);
         // do stuff
     }
 
@@ -114,5 +117,20 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
+    }
+
+    /**
+     * @param RequestInterface
+     * @returns SwaggerOperation
+     */
+    protected function getOperation(RequestInterface $request)
+    {
+        foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
+            if ($request->getUri()->getPath() == $pathKey) {
+                return $pathItem->getGet(); // based on method
+            }
+        }
+
+        throw new Exception(); // should be something more suitable
     }
 }

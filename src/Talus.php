@@ -131,6 +131,6 @@ class Talus implements LoggerAwareInterface
             }
         }
 
-        throw new Exception(); // should be something more suitable
+        throw new DomainException(); // should be something more suitable
     }
 }

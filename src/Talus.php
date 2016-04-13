@@ -97,7 +97,7 @@ class Talus implements LoggerAwareInterface
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-        $this->logger('built the request and response');
+        $this->logger->debug('built the request and response');
 
         $operation = $this->getOperation($request);
         // do stuff

@@ -127,7 +127,12 @@ class Talus implements LoggerAwareInterface
     {
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
             if ($request->getUri()->getPath() == $pathKey) {
-                return $pathItem->getGet(); // based on method
+                $method = $request->getMethod();
+                $method = strtolower($method);
+                $method = ucwords($method);
+                $method = "get{$method}";
+
+                return $path->$method();
             }
         }
 

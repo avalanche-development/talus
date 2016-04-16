@@ -8,6 +8,7 @@ namespace Jacobemerick\Talus;
 
 use DomainException;
 use InvalidArgumentException;
+use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -20,6 +21,9 @@ use Zend\Diactoros\ServerRequestFactory;
 
 class Talus implements LoggerAwareInterface
 {
+
+    /** @var ContainerInterface */
+    protected $container;
 
     /** @var LoggerInterface */
     protected $logger;
@@ -40,6 +44,15 @@ class Talus implements LoggerAwareInterface
      */
     public function __construct(array $config)
     {
+        if (!empty($config['container'])) {
+            if (!($config['container'] instanceof ContainerInterface)) {
+                throw new InvalidArgumentException('container must be instance of ContainerInterface');
+            }
+            $this->container = $config['container'];
+        } else {
+            // todo NullContainer?
+        }
+
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
                 throw new InvalidArgumentException('logger must be instance of LoggerInterface');
@@ -117,7 +130,8 @@ class Talus implements LoggerAwareInterface
 
                 $methodName = $operation->getOperationId();
                 // todo handle straight functions
-                $controller = new $controllerName(); // todo pass in di container
+
+                $controller = new $controllerName($this->container);
                 return $controller->$methodName($request, $response);
             }
         }

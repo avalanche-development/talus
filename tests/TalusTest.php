@@ -37,6 +37,35 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Psr\Log\LoggerAwareInterface', $talus);
     }
 
+    public function testConstructSetsNullContainer()
+    {
+        $this->markTestIncomplete('NullContainer not yet implemented (if even a good idea)');
+    }
+
+    public function testConstructSetsContainer()
+    {
+        $container = $this->getMock('Interop\Container\ContainerInterface');
+        $talus = new Talus([
+            'container' => $container,
+            'swagger' => $this->emptySwagger,
+        ]);
+
+        $this->assertAttributeSame($container, 'container', $talus);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage container must be instance of ContainerInterface
+     */
+    public function testConstructValidatesContainer()
+    {
+        $container = new stdclass();
+        $talus = new Talus([
+            'container' => $container,
+            'swagger' => $this->emptySwagger,
+        ]);
+    }
+
     public function testConstructSetsNullLogger()
     {
         $talus = new Talus([

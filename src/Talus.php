@@ -99,8 +99,28 @@ class Talus implements LoggerAwareInterface
         $response = $this->getResponse();
         $this->logger->debug('built the request and response');
 
-        $operation = $this->getOperation($request);
-        // do stuff
+        foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
+            if ($request->getUri()->getPath() == $pathKey) {
+                // todo this should be optional
+                $controllerName = $path->getVendorExtension('swagger-router-controller');
+                $method = $request->getMethod();
+                $method = strtolower($method);
+                $method = ucwords($method);
+                $method = "get{$method}";
+
+                try {
+                    $operation = $path->$method();
+                } catch (Exception $e) {
+                    // todo 404 handler
+                    throw $e;
+                }
+
+                $methodName = $operation->getOperationId();
+                // todo handle straight functions
+                $controller = new $controllerName(); // todo pass in di container
+                return $controller->$methodName($request, $response);
+            }
+        }
     }
 
     /**
@@ -117,25 +137,5 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
-    }
-
-    /**
-     * @param RequestInterface
-     * @returns SwaggerOperation
-     */
-    protected function getOperation(RequestInterface $request)
-    {
-        foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
-            if ($request->getUri()->getPath() == $pathKey) {
-                $method = $request->getMethod();
-                $method = strtolower($method);
-                $method = ucwords($method);
-                $method = "get{$method}";
-
-                return $path->$method();
-            }
-        }
-
-        throw new DomainException(); // should be something more suitable
     }
 }

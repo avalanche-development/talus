@@ -16,6 +16,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Swagger\Document as SwaggerDocument;
 use Swagger\Object\Operation as SwaggerOperation;
+use Swagger\Object\PathItem as SwaggerPath;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -103,42 +104,48 @@ class Talus implements LoggerAwareInterface
 
     public function addMiddleware()
     {
-        // add some middleware somehow
+        // todo add some middleware somehow
     }
 
     public function run()
     {
         $request = $this->getRequest();
         $response = $this->getResponse();
-        $this->logger->debug('built the request and response');
 
+        $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
-            if ($request->getUri()->getPath() == $pathKey) {
-                // todo this should be optional
-                $controllerName = $path->getVendorExtension('swagger-router-controller');
-                $method = $request->getMethod();
-                $method = strtolower($method);
-                $method = ucwords($method);
-                $method = "get{$method}";
 
-                try {
-                    $operation = $path->$method();
-                } catch (Exception $e) {
-                    // todo 404 handler
-                    throw $e;
-                }
-
-                $methodName = $operation->getOperationId();
-                // todo handle straight functions
-
-                $controller = new $controllerName($this->container);
-                return $controller->$methodName($request, $response);
+            // todo wildcard matching
+            if ($request->getUri()->getPath() != $pathKey) {
+                continue;
             }
+
+            try {
+                $operation = $this->matchOperation($path, $request);
+            } catch (Exception $e) {
+                // todo 404 handler
+                throw $e;
+            }
+
+            $this->logger->debug('Talus: routing matched, dispatching now');
+
+            // todo should verify that operationId exists
+            try {
+                // todo this could be operation-level
+                $controllerName = $path->getVendorExtension('swagger-router-controller');
+                $methodName = $operation->getOperationId();
+            } catch (Exception $e) {
+                // todo handle straight functions
+                throw $e;
+            }
+
+            $controller = new $controllerName($this->container);
+            return $controller->$methodName($request, $response);
         }
     }
 
     /**
-     * @returns RequestInterface
+     * @return RequestInterface
      */
     protected function getRequest()
     {
@@ -146,10 +153,26 @@ class Talus implements LoggerAwareInterface
     }
 
     /**
-     * @returns ResponseInterface
+     * @return ResponseInterface
      */
     protected function getResponse()
     {
         return new Response();
+    }
+
+    /**
+     * @param SwaggerPath $path
+     * @param RequestInterface $request
+     * @return SwaggerOperation
+     * @throws Exception
+     */
+    protected function matchOperation(SwaggerPath $path, RequestInterface $request)
+    {
+        $httpMethod = $request->getMethod();
+        $httpMethod = strtolower($httpMethod);
+        $httpMethod = ucwords($httpMethod);
+        $method = "get{$httpMethod}";
+
+        return $path->$method();
     }
 }

@@ -121,7 +121,8 @@ class Talus implements LoggerAwareInterface
             }
 
             try {
-                $operation = $this->matchOperation($path, $request);
+                $httpMethodName = $this->matchHttpMethod($request);
+                $operation = $path->$httpMethodName();
             } catch (Exception $e) {
                 // todo 404 handler
                 throw $e;
@@ -161,18 +162,14 @@ class Talus implements LoggerAwareInterface
     }
 
     /**
-     * @param SwaggerPath $path
      * @param RequestInterface $request
-     * @return SwaggerOperation
-     * @throws Exception
+     * @return string
      */
-    protected function matchOperation(SwaggerPath $path, RequestInterface $request)
+    protected function mapHttpMethod(RequestInterface $request)
     {
         $httpMethod = $request->getMethod();
         $httpMethod = strtolower($httpMethod);
         $httpMethod = ucwords($httpMethod);
-        $method = "get{$httpMethod}";
-
-        return $path->$method();
+        return "get{$httpMethod}";
     }
 }

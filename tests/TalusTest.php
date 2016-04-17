@@ -250,6 +250,23 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
     }
 
+    public function testMapHttpMethod()
+    {
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedMapHttpMethod = $reflectedTalus->getMethod('mapHttpMethod');
+        $reflectedMapHttpMethod->setAccessible(true);
+
+        $mockRequest = $this->getMock('Psr\Http\Message\RequestInterface');
+        $mockRequest->method('getMethod')->willReturn('POST');
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $httpMethodName = $reflectedMapHttpMethod->invokeArgs($talus, [$mockRequest]);
+
+        $this->assertEquals('getPost', $httpMethodName);
+    }
+
     public function tearDown()
     {
         $this->emptySwagger = fopen('empty-swagger.json', 'w');

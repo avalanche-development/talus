@@ -128,7 +128,7 @@ class Talus implements LoggerAwareInterface
             }
 
             try {
-                $httpMethodName = $this->matchHttpMethod($request);
+                $httpMethodName = $this->mapHttpMethod($request);
                 $operation = $path->$httpMethodName();
             } catch (Exception $e) {
                 // todo 404 handler
@@ -147,8 +147,15 @@ class Talus implements LoggerAwareInterface
                 throw $e;
             }
 
+            // todo dispatch block should be handled somewhere
+            foreach ($this->middlewareStack as $middleware) {
+                $middleware($request, $response);
+            }
             $controller = new $controllerName($this->container);
-            return $controller->$methodName($request, $response);
+            $controller->$methodName($request, $response);
+            foreach ($this->middlewareStack as $middleware) {
+                $middleware($request, $response);
+            }
         }
     }
 

@@ -6,6 +6,7 @@
 
 namespace Jacobemerick\Talus;
 
+use Closure;
 use DomainException;
 use InvalidArgumentException;
 use Interop\Container\ContainerInterface;
@@ -39,6 +40,9 @@ class Talus implements LoggerAwareInterface
         'w+',
         'w+b',
     ];
+
+    /** @var array */
+    protected $middlewareStack = [];
 
     /**
      * @param array $config
@@ -102,9 +106,12 @@ class Talus implements LoggerAwareInterface
         $this->logger = $logger;
     }
 
-    public function addMiddleware()
+    /**
+     * @param Closure $middleware
+     */
+    public function addMiddleware(Closure $middleware)
     {
-        // todo add some middleware somehow
+        array_push($this->middlewareStack, $middleware);
     }
 
     public function run()

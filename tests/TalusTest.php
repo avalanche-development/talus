@@ -222,6 +222,40 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame($logger, 'logger', $talus);
     }
 
+    public function testAddMiddleware()
+    {
+        $middleware = function ($req, $res) {};
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $talus->addMiddleware($middleware);
+
+        $this->assertAttributeSame([$middleware], 'middlewareStack', $talus);
+    }
+
+    /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage middleware must handle request and response
+     */
+    public function testAddMiddlewareBadClosure()
+    {
+        $this->markTestIncomplete('Needs to add validation for middleware closure');
+    }
+
+    public function testAddMiddlewareStacking()
+    {
+        $middlewareStack = [
+            function ($req, $res) {},
+            function ($req, $res) {},
+        ];
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        array_walk($middlewareStack, [$talus, 'addMiddleware']);
+
+        $this->assertAttributeSame($middlewareStack, 'middlewareStack', $talus);
+    }
+
     public function testGetRequest()
     {
         $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');

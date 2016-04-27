@@ -8,6 +8,7 @@ namespace Jacobemerick\Talus;
 
 use Closure;
 use DomainException;
+use Exception;
 use InvalidArgumentException;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
@@ -43,6 +44,9 @@ class Talus implements LoggerAwareInterface
 
     /** @var array */
     protected $middlewareStack = [];
+
+    /** @var Closure */
+    protected $errorHandler;
 
     /**
      * @param array $config
@@ -114,6 +118,14 @@ class Talus implements LoggerAwareInterface
         array_push($this->middlewareStack, $middleware);
     }
 
+    /**
+     * @param Closure $errorHandler
+     */
+    public function setErrorHandler(Closure $errorHandler)
+    {
+        $this->errorHandler = $errorHandler;
+    }
+
     public function run()
     {
         $request = $this->getRequest();
@@ -148,13 +160,17 @@ class Talus implements LoggerAwareInterface
             }
 
             // todo dispatch block should be handled somewhere
-            foreach ($this->middlewareStack as $middleware) {
-                $middleware($request, $response);
-            }
-            $controller = new $controllerName($this->container);
-            $controller->$methodName($request, $response);
-            foreach ($this->middlewareStack as $middleware) {
-                $middleware($request, $response);
+            try {
+                foreach ($this->middlewareStack as $middleware) {
+                    $middleware($request, $response);
+                }
+                $controller = new $controllerName($this->container);
+                $controller->$methodName($request, $response);
+                foreach ($this->middlewareStack as $middleware) {
+                    $middleware($request, $response);
+                }
+            } catch (Exception $e) {
+                $this->errorHandler($request, $response, $exception);
             }
         }
     }

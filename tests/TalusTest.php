@@ -256,6 +256,17 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame($middlewareStack, 'middlewareStack', $talus);
     }
 
+    public function testSetErrorHandler()
+    {
+        $errorHandler = function ($req, $res, $e) {};
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $talus->setErrorHandler($errorHandler);
+
+        $this->assertAttributeSame($errorHandler, 'errorHandler', $talus);
+    }
+
     public function testGetRequest()
     {
         $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');

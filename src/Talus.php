@@ -159,15 +159,21 @@ class Talus implements LoggerAwareInterface
                 throw $e;
             }
 
+            $stack = $this->middlewareStack;
+            $container = $this->container;
+            array_push($stack, function ($req, $res) use ($controllerName, $methodName, $container) {
+                $controller = new $controllerName($container);
+                $controller->$methodName($req, $res);
+            });
+
             // todo dispatch block should be handled somewhere
             try {
-                foreach ($this->middlewareStack as $middleware) {
-                    $middleware($request, $response);
-                }
-                $controller = new $controllerName($this->container);
-                $controller->$methodName($request, $response);
-                foreach ($this->middlewareStack as $middleware) {
-                    $middleware($request, $response);
+                foreach ($stack as $i => $call) {
+                    if ($i < count($stack) - 1) {
+                        $call($request, $response, $stack[$i + 1]);
+                    } else {
+                        // $call($request, $response);
+                    }
                 }
             } catch (Exception $e) {
                 $this->errorHandler($request, $response, $exception);

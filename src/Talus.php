@@ -127,7 +127,7 @@ class Talus implements LoggerAwareInterface
         $this->callStack($request, $response);
     }
 
-    public function __invoke(Request $request, Response $response)
+    public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
 
@@ -156,25 +156,8 @@ class Talus implements LoggerAwareInterface
                 throw $e;
             }
 
-            $stack = $this->middlewareStack;
-            $container = $this->container;
-            array_push($stack, function ($req, $res) use ($controllerName, $methodName, $container) {
-                $controller = new $controllerName($container);
-                $controller->$methodName($req, $res);
-            });
-
-            // todo dispatch block should be handled somewhere
-            try {
-                foreach ($stack as $i => $call) {
-                    if ($i < count($stack) - 1) {
-                        $call($request, $response, $stack[$i + 1]);
-                    } else {
-                        // $call($request, $response);
-                    }
-                }
-            } catch (Exception $e) {
-                $this->errorHandler($request, $response, $exception);
-            }
+            $controller = new $controllerName($this->container);
+            return $controller->$methodName($request, $response);
         }
     }
 

@@ -24,8 +24,8 @@ trait MiddlewareTrait
         }
 
         $next = reset($this->stack);
-        array_push($this->stack, function (Request $req, Response $res) use ($callable, $next) {
-            $result = call_user_func($callball, $req, $res, $next);
+        array_unshift($this->stack, function (Request $req, Response $res) use ($callable, $next) {
+            $result = call_user_func($callable, $req, $res, $next);
             if (!($result instanceof Response)) {
                 throw new UnexpectedValueException('Middleware must return instance of Psr Response');
             }

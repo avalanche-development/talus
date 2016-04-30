@@ -25,7 +25,7 @@ use Zend\Diactoros\ServerRequestFactory;
 class Talus implements LoggerAwareInterface
 {
 
-    use MiddlewareTrait;
+    use MiddlewareAwareTrait;
 
     /** @var ContainerInterface */
     protected $container;

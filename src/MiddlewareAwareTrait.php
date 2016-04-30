@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use RuntimeException;
 use UnexpectedValueException;
 
-trait MiddlewareTrait
+trait MiddlewareAwareTrait
 {
 
     /** @var array */

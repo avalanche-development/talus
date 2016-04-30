@@ -222,21 +222,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame($logger, 'logger', $talus);
     }
 
-    public function testAddMiddleware()
-    {
-        $this->markTestIncomplete('Belongs in separate MiddlewareTrait test');
-    }
-
-    public function testAddMiddlewareBadClosure()
-    {
-        $this->markTestIncomplete('Needs to add validation for middleware closure');
-    }
-
-    public function testAddMiddlewareStacking()
-    {
-        $this->markTestIncomplete('Belongs in separate MiddlewareTrait test');
-    }
-
     public function testSetErrorHandler()
     {
         $errorHandler = function ($req, $res, $e) {};

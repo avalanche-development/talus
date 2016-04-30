@@ -25,6 +25,8 @@ use Zend\Diactoros\ServerRequestFactory;
 class Talus implements LoggerAwareInterface
 {
 
+    use MiddlewareTrait;
+
     /** @var ContainerInterface */
     protected $container;
 
@@ -41,9 +43,6 @@ class Talus implements LoggerAwareInterface
         'w+',
         'w+b',
     ];
-
-    /** @var array */
-    protected $middlewareStack = [];
 
     /** @var Closure */
     protected $errorHandler;
@@ -111,14 +110,6 @@ class Talus implements LoggerAwareInterface
     }
 
     /**
-     * @param Closure $middleware
-     */
-    public function addMiddleware(Closure $middleware)
-    {
-        array_push($this->middlewareStack, $middleware);
-    }
-
-    /**
      * @param Closure $errorHandler
      */
     public function setErrorHandler(Closure $errorHandler)
@@ -132,6 +123,12 @@ class Talus implements LoggerAwareInterface
         $response = $this->getResponse();
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
+
+        $this->callStack($request, $response);
+    }
+
+    public function __invoke(Request $request, Response $response)
+    {
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
 
             // todo wildcard matching

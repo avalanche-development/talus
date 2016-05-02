@@ -34,20 +34,6 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException PHPUnit_Framework_Error
-     */
-    public function testSeedStackEnsuresCallable()
-    {
-        $stub = new MiddlewareAwareStub();
-
-        $reflectedStub = new ReflectionClass($stub);
-        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
-        $reflectedSeedStack->setAccessible(true);
-
-        $reflectedSeedStack->invokeArgs($stub, ['foo']);
-    }
-
-    /**
      * @expectedException RuntimeException
      * @expectedExceptionMessage Can only seed the stack once
      */

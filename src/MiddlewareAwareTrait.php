@@ -6,8 +6,8 @@
 
 namespace Jacobemerick\Talus;
 
-use Psr\Http\Message\RequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -23,13 +23,19 @@ trait MiddlewareAwareTrait
             $this->seedStack($this);
         }
 
+        $decoratedMiddleware = $this->decorateMiddleware($callable);
+        array_unshift($this->stack, $decoratedMiddleware);
+    }
+
+    protected function decorateMiddleware(callable $callable)
+    {
         $next = reset($this->stack);
-        array_unshift($this->stack, function (Request $req, Response $res) use ($callable, $next) {
-            $result = call_user_func($callable, $req, $res, $next);
-            if (!($result instanceof Response)) {
+        return function (RequestInterface $request, ResponseInterface $response) use ($callable, $next) {
+            $result = call_user_func($callable, $request, $response, $next);
+            if (!($result instanceof ResponseInterface)) {
                 throw new UnexpectedValueException('Middleware must return instance of Psr Response');
             }
-        });
+        };
     }
 
     protected function seedStack(callable $callable)
@@ -42,13 +48,13 @@ trait MiddlewareAwareTrait
         array_push($this->stack, $callable);
     }
 
-    public function callStack(Request $req, Response $res)
+    public function callStack(RequestInterface $request, ResponseInterface $response)
     {
         if (empty($this->stack)) {
             $this->seedStack($this);
         }
 
         $top = reset($this->stack);
-        return $top($req, $res);
+        return $top($request, $response);
     }
 }

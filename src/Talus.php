@@ -14,6 +14,7 @@ use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Swagger\Document as SwaggerDocument;
@@ -25,13 +26,12 @@ use Zend\Diactoros\ServerRequestFactory;
 class Talus implements LoggerAwareInterface
 {
 
+    use LoggerAwareTrait;
+
     use MiddlewareAwareTrait;
 
     /** @var ContainerInterface */
     protected $container;
-
-    /** @var LoggerInterface */
-    protected $logger;
 
     /** @var SwaggerDocument */
     protected $swagger;
@@ -99,14 +99,6 @@ class Talus implements LoggerAwareInterface
             throw new DomainException('swagger stream is not parseable');
         }
         return $spec;
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**

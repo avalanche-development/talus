@@ -211,17 +211,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testSetLogger()
-    {
-        $logger = $this->getMock('Psr\Log\LoggerInterface');
-        $talus = new Talus([
-            'swagger' => $this->emptySwagger,
-        ]);
-        $talus->setLogger($logger);
-
-        $this->assertAttributeSame($logger, 'logger', $talus);
-    }
-
     public function testSetErrorHandler()
     {
         $errorHandler = function ($req, $res, $e) {};

@@ -11,13 +11,53 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testAddMiddleware()
     {
-        $this->markTestIncomplete('Needs some more finesse');
+        $this->markTestIncomplete('Closures are hard to match');
 
-        $stub = new MiddlewareAwareStub();
         $middleware = function ($req, $res, $next) {};
+        $stub = new MiddlewareAwareStub();
         $stub->addMiddleware($middleware);
 
-        $this->assertAttributeContains($middleware, 'stack', $stub);
+        $reflectedStub = new ReflectionClass($stub);
+        $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
+        $reflectedDecorator->setAccessible(true);
+
+        $decoratedMiddleware = $reflectedDecorator->invokeArgs($stub, [$middleware]);
+
+        $this->assertAttributeContains($decoratedMiddleware, 'stack', $stub);
+    }
+
+    public function testAddMiddlewareSeedsEmptyStack()
+    {
+        $middleware = function ($req, $res, $next) {};
+        $stub = new MiddlewareAwareStub();
+        $stub->addMiddleware($middleware);
+
+        $this->assertAttributeContains($stub, 'stack', $stub);
+    }
+
+    public function testAddMiddlewareDoesNotRepeatSeed()
+    {
+        $middleware = function ($req, $res, $next) {};
+        $stub = new MiddlewareAwareStub();
+
+        $reflectedStub = new ReflectionClass($stub);
+        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
+        $reflectedSeedStack->setAccessible(true);
+
+        $reflectedSeedStack->invokeArgs($stub, [$middleware]);
+
+        $stub->addMiddleware($middleware);
+        $this->assertAttributeNotContains($stub, 'stack', $stub);
+    }
+
+    public function testAddMiddlewareResponse()
+    {
+        $middleware = function ($req, $res, $next) {};
+        $stub = new MiddlewareAwareStub();
+        $stackSize = $stub->addMiddleware($middleware);
+
+        $this->assertInternalType('integer', $stackSize);
+        $this->assertAttributeCount($stackSize, 'stack', $stub);
     }
 
     public function testSeedStack()
@@ -31,6 +71,20 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $reflectedSeedStack->invokeArgs($stub, [$stub]);
 
         $this->assertAttributeEquals([$stub], 'stack', $stub);
+    }
+
+    public function testSeedStackResponse()
+    {
+        $stub = new MiddlewareAwareStub();
+
+        $reflectedStub = new ReflectionClass($stub);
+        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
+        $reflectedSeedStack->setAccessible(true);
+
+        $stackSize = $reflectedSeedStack->invokeArgs($stub, [$stub]);
+
+        $this->assertInternalType('integer', $stackSize);
+        $this->assertAttributeCount($stackSize, 'stack', $stub);
     }
 
     /**

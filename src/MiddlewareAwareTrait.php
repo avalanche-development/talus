@@ -17,6 +17,10 @@ trait MiddlewareAwareTrait
     /** @var array */
     protected $stack;
 
+    /**
+     * @param callable $callable
+     * @returns integer
+     */
     public function addMiddleware(callable $callable)
     {
         if (empty($this->stack)) {
@@ -24,9 +28,13 @@ trait MiddlewareAwareTrait
         }
 
         $decoratedMiddleware = $this->decorateMiddleware($callable);
-        array_unshift($this->stack, $decoratedMiddleware);
+        return array_unshift($this->stack, $decoratedMiddleware);
     }
 
+    /**
+     * @param callable $callable
+     * @returns callable
+     */
     protected function decorateMiddleware(callable $callable)
     {
         $next = reset($this->stack);
@@ -38,6 +46,10 @@ trait MiddlewareAwareTrait
         };
     }
 
+    /**
+     * @param callable $callable
+     * @returns integer
+     */
     protected function seedStack(callable $callable)
     {
         if (!empty($this->stack)) {
@@ -45,9 +57,14 @@ trait MiddlewareAwareTrait
         }
 
         $this->stack = [];
-        array_push($this->stack, $callable);
+        return array_push($this->stack, $callable);
     }
 
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @returns RequestInterface
+     */
     public function callStack(RequestInterface $request, ResponseInterface $response)
     {
         if (empty($this->stack)) {

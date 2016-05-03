@@ -11,19 +11,19 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testAddMiddleware()
     {
-        $this->markTestIncomplete('Closures are hard to match');
-
         $middleware = function ($req, $res, $next) {};
         $stub = new MiddlewareAwareStub();
+        $decoratedMiddleware = function ($req, $res) use ($middleware, $stub) {};
         $stub->addMiddleware($middleware);
 
         $reflectedStub = new ReflectionClass($stub);
-        $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
-        $reflectedDecorator->setAccessible(true);
+        $reflectedStack = $reflectedStub->getProperty('stack');
+        $reflectedStack->setAccessible(true);
 
-        $decoratedMiddleware = $reflectedDecorator->invokeArgs($stub, [$middleware]);
+        $result = $reflectedStack->getValue($stub);
+        $result = reset($result);
 
-        $this->assertAttributeContains($decoratedMiddleware, 'stack', $stub);
+        $this->assertEquals($decoratedMiddleware, $result);
     }
 
     public function testAddMiddlewareSeedsEmptyStack()
@@ -58,6 +58,48 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
         $this->assertInternalType('integer', $stackSize);
         $this->assertAttributeCount($stackSize, 'stack', $stub);
+    }
+
+    public function testDecorateMiddleware()
+    {
+        $middleware = function ($req, $res, $next) {};
+        $stub = new MiddlewareAwareStub();
+        $decoratedMiddleware = function ($req, $res) use ($middleware, $stub) {};
+
+        $reflectedStub = new ReflectionClass($stub);
+        $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
+        $reflectedDecorator->setAccessible(true);
+        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
+        $reflectedSeedStack->setAccessible(true);
+
+        $reflectedSeedStack->invokeArgs($stub, [$stub]);
+        $result = $reflectedDecorator->invokeArgs($stub, [$middleware]);
+
+        $this->assertInternalType('callable', $result);
+        $this->assertEquals($decoratedMiddleware, $result);
+    }
+
+    /**
+     * @expectedException UnexpectedValueException
+     * @expectedExceptionMessage Middleware must return instance of Psr Response
+     */
+    public function testDecoratedMiddlewareValidatesResponse()
+    {
+        $middleware = function ($req, $res, $next) { return 'foo'; };
+        $stub = new MiddlewareAwareStub();
+        $request = $this->getMock('Psr\Http\Message\RequestInterface');
+        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+
+        $reflectedStub = new ReflectionClass($stub);
+        $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
+        $reflectedDecorator->setAccessible(true);
+        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
+        $reflectedSeedStack->setAccessible(true);
+
+        $reflectedSeedStack->invokeArgs($stub, [$stub]);
+        $result = $reflectedDecorator->invokeArgs($stub, [$middleware]);
+
+        $result($request, $response);
     }
 
     public function testSeedStack()

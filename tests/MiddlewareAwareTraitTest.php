@@ -14,7 +14,10 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $middleware = function ($req, $res, $next) {};
         $stub = new MiddlewareAwareStub();
         $decoratedMiddleware = function ($req, $res) use ($middleware, $stub) {};
-        $stub->addMiddleware($middleware);
+        $stackSize = $stub->addMiddleware($middleware);
+
+        $this->assertInternalType('integer', $stackSize);
+        $this->assertAttributeCount($stackSize, 'stack', $stub);
 
         $reflectedStub = new ReflectionClass($stub);
         $reflectedStack = $reflectedStub->getProperty('stack');
@@ -50,16 +53,6 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeNotContains($stub, 'stack', $stub);
     }
 
-    public function testAddMiddlewareResponse()
-    {
-        $middleware = function ($req, $res, $next) {};
-        $stub = new MiddlewareAwareStub();
-        $stackSize = $stub->addMiddleware($middleware);
-
-        $this->assertInternalType('integer', $stackSize);
-        $this->assertAttributeCount($stackSize, 'stack', $stub);
-    }
-
     public function testDecorateMiddleware()
     {
         $middleware = function ($req, $res, $next) {};
@@ -69,10 +62,10 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $reflectedStub = new ReflectionClass($stub);
         $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
         $reflectedDecorator->setAccessible(true);
-        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
-        $reflectedSeedStack->setAccessible(true);
+        $reflectedStack = $reflectedStub->getProperty('stack');
+        $reflectedStack->setAccessible(true);
+        $reflectedStack->setValue($stub, [$stub]);
 
-        $reflectedSeedStack->invokeArgs($stub, [$stub]);
         $result = $reflectedDecorator->invokeArgs($stub, [$middleware]);
 
         $this->assertInternalType('callable', $result);
@@ -110,21 +103,9 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
         $reflectedSeedStack->setAccessible(true);
 
-        $reflectedSeedStack->invokeArgs($stub, [$stub]);
-
-        $this->assertAttributeEquals([$stub], 'stack', $stub);
-    }
-
-    public function testSeedStackResponse()
-    {
-        $stub = new MiddlewareAwareStub();
-
-        $reflectedStub = new ReflectionClass($stub);
-        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
-        $reflectedSeedStack->setAccessible(true);
-
         $stackSize = $reflectedSeedStack->invokeArgs($stub, [$stub]);
 
+        $this->assertAttributeEquals([$stub], 'stack', $stub);
         $this->assertInternalType('integer', $stackSize);
         $this->assertAttributeCount($stackSize, 'stack', $stub);
     }
@@ -143,5 +124,40 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
         $reflectedSeedStack->invokeArgs($stub, [$stub]);
         $reflectedSeedStack->invokeArgs($stub, [$stub]);
+    }
+
+    public function testCallStack()
+    {
+        $middleware = function ($req, $res, $next) {
+            $next($req, $res);
+            return $res;
+        };
+        $stub = new MiddlewareAwareStub();
+        $decoratedMiddleware = function ($req, $res) use ($middleware, $stub) {
+            return call_user_func($middleware, $req, $res, $stub);
+        };
+        $request = $this->getMock('Psr\Http\Message\RequestInterface');
+        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+
+        $reflectedStub = new ReflectionClass($stub);
+        $reflectedStack = $reflectedStub->getProperty('stack');
+        $reflectedStack->setAccessible(true);
+        $reflectedStack->setValue($stub, [$stub, $decoratedMiddleware]);
+
+        $result = $stub->callStack($request, $response);
+
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
+    }
+
+    public function testCallStackSeedsEmptyStack()
+    {
+        $middleware = function ($req, $res, $next) {};
+        $stub = new MiddlewareAwareStub();
+        $request = $this->getMock('Psr\Http\Message\RequestInterface');
+        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+
+        $stub->callStack($request, $response);
+
+        $this->assertAttributeContains($stub, 'stack', $stub);
     }
 }

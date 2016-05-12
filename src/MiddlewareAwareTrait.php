@@ -43,6 +43,7 @@ trait MiddlewareAwareTrait
             if (!($result instanceof ResponseInterface)) {
                 throw new UnexpectedValueException('Middleware must return instance of Psr Response');
             }
+            return $result;
         };
     }
 

@@ -116,7 +116,8 @@ class Talus implements LoggerAwareInterface
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
-        $this->callStack($request, $response);
+        $result = $this->callStack($request, $response);
+        echo (string) $result->getBody();
     }
 
     public function __invoke(RequestInterface $request, ResponseInterface $response)

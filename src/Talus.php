@@ -117,6 +117,11 @@ class Talus implements LoggerAwareInterface
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
         $result = $this->callStack($request, $response);
+
+        // todo is there a better way to output this
+        foreach ($result->getHeaders() as $header => $values) {
+            header(sprintf("%s: %s\n", $header, implode(', ', $values)));
+        }
         echo (string) $result->getBody();
     }
 

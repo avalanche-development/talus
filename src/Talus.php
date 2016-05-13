@@ -117,14 +117,25 @@ class Talus implements LoggerAwareInterface
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
         $result = $this->callStack($request, $response);
+        $this->outputResponse($result);
+    }
 
-        // todo is there a better way to output this
+    /**
+     * @param ResponseInterface $response
+     */
+    public function outputResponse(ResponseInterface $response)
+    {
         foreach ($result->getHeaders() as $header => $values) {
             header(sprintf("%s: %s\n", $header, implode(', ', $values)));
         }
+        // todo do we care about chunking?
         echo (string) $result->getBody();
     }
 
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {

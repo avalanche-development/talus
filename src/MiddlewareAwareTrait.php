@@ -24,6 +24,7 @@ trait MiddlewareAwareTrait
     public function addMiddleware(callable $callable)
     {
         if (empty($this->stack)) {
+            // todo not sure if i like seeding the stack like this...
             $this->seedStack($this);
         }
 

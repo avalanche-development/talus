@@ -20,6 +20,8 @@ use Psr\Log\NullLogger;
 use Swagger\Document as SwaggerDocument;
 use Swagger\Object\Operation as SwaggerOperation;
 use Swagger\Object\PathItem as SwaggerPath;
+use Swagger\SchemaResolver;
+use Swagger\Json\Pointer as SwaggerPointer;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -140,9 +142,11 @@ class Talus implements LoggerAwareInterface
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
-            if (!$this->matchPath($request, $pathKey)) {
+            $result = $this->matchPath($request, $pathKey, $path);
+            if ($result === false) {
                 continue;
             }
+            $request = $result;
 
             try {
                 $httpMethodName = $this->mapHttpMethod($request);
@@ -172,16 +176,57 @@ class Talus implements LoggerAwareInterface
     /**
      * @param RequestInterface $request
      * @param string $pathKey
+     * @param SwaggerPath $swaggerPath
      * @response boolean
      */
-    protected function matchPath(RequestInterface $request, $pathKey)
+    protected function matchPath(RequestInterface $request, $pathKey, SwaggerPath $swaggerPath)
     {
         if ($request->getUri()->getPath() == $pathKey) {
             return true;
         }
 
-        // todo wildcard matching
-        return false;
+        // todo what are acceptable path param values, anyways?
+        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $pathKey, $pathMatches);
+        if (!$isVariablePath) {
+            return false;
+        }
+
+        // loop da loop
+        foreach ($pathMatches[1] as $pathParam) {
+            foreach ($swaggerPath->getParameters() as $parameter) {
+                // why oh why is this necessary
+                if ($parameter->hasDocumentProperty('$ref')) {
+                    $resolver = new SchemaResolver($this->swagger);
+                    $pointer = $parameter->getDocumentProperty('$ref');
+                    $pointer = substr($pointer, 2);
+                    $pointer = new SwaggerPointer($pointer);
+                    $parameter = $resolver->findTypeAtPointer($pointer);
+                }
+                if ($pathParam == $parameter->getName()) {
+                    // todo extract extract will robinson
+                    if ($parameter->getDocumentProperty('type') == 'string') {
+                        $pathKey = str_replace('{' . $pathParam . '}', '(?P<' . $pathParam . '>\w+)', $pathKey);
+                        continue 2;
+                    }
+                }
+            }
+            return false;
+        }
+
+        $matchedVariablePath = preg_match('@' . $pathKey . '@', $request->getUri()->getPath(), $pathMatches);
+        if (!$matchedVariablePath) {
+            return false;
+        }
+
+        $pathMatches = array_filter($pathMatches, function ($key) {
+            return !is_numeric($key);
+        }, ARRAY_FILTER_USE_KEY);
+
+        foreach ($pathMatches as $key => $value) {
+            $request = $request->withAttribute($key, $value);
+        }
+
+        return $request;
     }
 
     /**

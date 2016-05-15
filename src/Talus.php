@@ -135,13 +135,12 @@ class Talus implements LoggerAwareInterface
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
+     * @returns ResponseInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
-
-            // todo wildcard matching
-            if ($request->getUri()->getPath() != $pathKey) {
+            if (!$this->matchPath($request, $pathKey)) {
                 continue;
             }
 
@@ -168,6 +167,21 @@ class Talus implements LoggerAwareInterface
             $controller = new $controllerName($this->container);
             return $controller->$methodName($request, $response);
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param string $pathKey
+     * @response boolean
+     */
+    protected function matchPath(RequestInterface $request, $pathKey)
+    {
+        if ($request->getUri()->getPath() == $pathKey) {
+            return true;
+        }
+
+        // todo wildcard matching
+        return false;
     }
 
     /**

@@ -179,10 +179,11 @@ class Talus implements LoggerAwareInterface
      * @param SwaggerPath $swaggerPath
      * @response boolean
      */
+    // todo a better response
     protected function matchPath(RequestInterface $request, $pathKey, SwaggerPath $swaggerPath)
     {
         if ($request->getUri()->getPath() == $pathKey) {
-            return true;
+            return $request;
         }
 
         // todo what are acceptable path param values, anyways?

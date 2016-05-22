@@ -127,6 +127,11 @@ class Talus implements LoggerAwareInterface
      */
     public function outputResponse(ResponseInterface $response)
     {
+        header(
+            sprintf("HTTP/1.1 %s %s\n", $response->getStatusCode(), $response->getReasonPhrase()),
+            true,
+            $response->getStatusCode()
+        );
         foreach ($response->getHeaders() as $header => $values) {
             header(sprintf("%s: %s\n", $header, implode(', ', $values)));
         }

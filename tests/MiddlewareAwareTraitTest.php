@@ -72,6 +72,28 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($decoratedMiddleware, $result);
     }
 
+    public function testDecoratedMiddlewareReturnsResponse()
+    {
+        $middleware = function ($req, $res, $next) { return $res; };
+        $stub = new MiddlewareAwareStub();
+        $request = $this->getMock('Psr\Http\Message\RequestInterface');
+        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+
+        $reflectedStub = new ReflectionClass($stub);
+        $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
+        $reflectedDecorator->setAccessible(true);
+        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
+        $reflectedSeedStack->setAccessible(true);
+
+        $reflectedSeedStack->invokeArgs($stub, [$stub]);
+        $decoratedMiddleware = $reflectedDecorator->invokeArgs($stub, [$middleware]);
+
+        $result = $decoratedMiddleware($request, $response);
+
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
+        $this->assertSame($response, $result);
+    }
+
     /**
      * @expectedException UnexpectedValueException
      * @expectedExceptionMessage Middleware must return instance of Psr Response
@@ -90,9 +112,9 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $reflectedSeedStack->setAccessible(true);
 
         $reflectedSeedStack->invokeArgs($stub, [$stub]);
-        $result = $reflectedDecorator->invokeArgs($stub, [$middleware]);
+        $decoratedMiddleware = $reflectedDecorator->invokeArgs($stub, [$middleware]);
 
-        $result($request, $response);
+        $decoratedMiddleware($request, $response);
     }
 
     public function testSeedStack()

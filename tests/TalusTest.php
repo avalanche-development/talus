@@ -222,6 +222,40 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame($errorHandler, 'errorHandler', $talus);
     }
 
+    public function testRun()
+    {
+        $this->markTestIncomplete('Talus::run() is not yet covered');
+    }
+
+    public function testOutputResponseSendsStatus()
+    {
+        $statusCode = 403;
+        $reasonPhrase = 'Forbidden';
+
+        ob_start();
+        var_dump([
+            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
+            true,
+            $statusCode,
+        ]);
+        $expectedHeaders = ob_get_clean();
+
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
+        $reflectedOutput->setAccessible(true);
+
+        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse->method('getStatusCode')->willReturn($statusCode);
+        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
+
+        $this->expectOutputString($expectedHeaders);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $reflectedOutput->invokeArgs($talus, [$mockResponse]);
+    }
+
     public function testGetRequest()
     {
         $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');

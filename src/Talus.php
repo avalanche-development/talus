@@ -125,16 +125,20 @@ class Talus implements LoggerAwareInterface
     /**
      * @param ResponseInterface $response
      */
-    public function outputResponse(ResponseInterface $response)
+    protected function outputResponse(ResponseInterface $response)
     {
         header(
-            sprintf("HTTP/1.1 %s %s\n", $response->getStatusCode(), $response->getReasonPhrase()),
+            sprintf('HTTP/1.1 %d %s', $response->getStatusCode(), $response->getReasonPhrase()),
             true,
             $response->getStatusCode()
         );
-        foreach ($response->getHeaders() as $header => $values) {
-            header(sprintf("%s: %s\n", $header, implode(', ', $values)));
+
+        if ($response->getHeaders() !== NULL) {
+            foreach ($response->getHeaders() as $header => $values) {
+                header(sprintf('%s: %s', $header, implode(', ', $values)));
+            }
         }
+
         // todo do we care about chunking?
         echo (string) $response->getBody();
     }

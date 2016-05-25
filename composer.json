@@ -32,6 +32,9 @@
         }
     },
     "autoload-dev": {
+        "files": [
+            "tests/function-overrides.php"
+        ],
         "psr-4": {
             "Jacobemerick\\Talus\\": "tests/"
         }

@@ -3,5 +3,5 @@
 namespace Jacobemerick\Talus;
 
 function header() {
-    var_dump(func_get_args());
+    print_r(func_get_args());
 }

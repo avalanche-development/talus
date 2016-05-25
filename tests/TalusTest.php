@@ -233,7 +233,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reasonPhrase = 'Forbidden';
 
         ob_start();
-        var_dump([
+        print_r([
             sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
             true,
             $statusCode,

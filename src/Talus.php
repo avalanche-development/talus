@@ -59,8 +59,6 @@ class Talus implements LoggerAwareInterface
                 throw new InvalidArgumentException('container must be instance of ContainerInterface');
             }
             $this->container = $config['container'];
-        } else {
-            // todo NullContainer?
         }
 
         if (!empty($config['logger'])) {

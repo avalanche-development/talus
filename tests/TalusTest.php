@@ -256,6 +256,127 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
 
+    public function testOutputResponseSendsHeaders()
+    {
+        $statusCode = 200;
+        $reasonPhrase = 'OK';
+        $headers = [
+            'Content-Type' => ['application/json'],
+            'Content-Language' => ['en/us'],
+        ];
+
+        ob_start();
+        print_r([
+            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
+            true,
+            $statusCode,
+        ]);
+        foreach ($headers as $headerKey => $headerValue) {
+            print_r([
+                sprintf("%s: %s", $headerKey, implode(', ', $headerValue)),
+                true,
+            ]);
+        }
+        $expectedHeaders = ob_get_clean();
+
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
+        $reflectedOutput->setAccessible(true);
+
+        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse->method('getStatusCode')->willReturn($statusCode);
+        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
+        $mockResponse->method('getHeaders')->willReturn($headers);
+
+        $this->expectOutputString($expectedHeaders);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $reflectedOutput->invokeArgs($talus, [$mockResponse]);
+    }
+
+    public function testOutputResponseSendsMultipleHeaders()
+    {
+        $statusCode = 200;
+        $reasonPhrase = 'OK';
+        $headers = [
+            'Content-Type' => ['application/json', 'application/json+xml'],
+        ];
+
+        ob_start();
+        print_r([
+            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
+            true,
+            $statusCode,
+        ]);
+        foreach ($headers as $headerKey => $headerValue) {
+            print_r([
+                sprintf("%s: %s", $headerKey, implode(', ', $headerValue)),
+                true,
+            ]);
+        }
+        $expectedHeaders = ob_get_clean();
+
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
+        $reflectedOutput->setAccessible(true);
+
+        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse->method('getStatusCode')->willReturn($statusCode);
+        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
+        $mockResponse->method('getHeaders')->willReturn($headers);
+
+        $this->expectOutputString($expectedHeaders);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $reflectedOutput->invokeArgs($talus, [$mockResponse]);
+    }
+
+    public function testOutputResponseSendsBody()
+    {
+        $statusCode = 200;
+        $reasonPhrase = 'OK';
+        $body = 'Hello world!';
+
+        ob_start();
+        print_r([
+            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
+            true,
+            $statusCode,
+        ]);
+        echo $body;
+        $expectedOutput = ob_get_clean();
+
+        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
+        $reflectedOutput->setAccessible(true);
+
+        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse->method('getStatusCode')->willReturn($statusCode);
+        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
+        $mockResponse->method('getBody')->willReturn($body);
+
+        $this->expectOutputString($expectedOutput);
+
+        $talus = new Talus([
+            'swagger' => $this->emptySwagger,
+        ]);
+        $reflectedOutput->invokeArgs($talus, [$mockResponse]);
+    }
+
+    public function testInvoke()
+    {
+        $this->markTestIncomplete('Talus::__invoke() is not yet covered');
+    }
+
+    public function testMatchPath()
+    {
+        $this->markTestIncomplete('Talus::matchPath() is not yet covered');
+    }
+
     public function testGetRequest()
     {
         $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');

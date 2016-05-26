@@ -135,7 +135,10 @@ class Talus implements LoggerAwareInterface
 
         if ($response->getHeaders() !== NULL) {
             foreach ($response->getHeaders() as $header => $values) {
-                header(sprintf('%s: %s', $header, implode(', ', $values)));
+                header(
+                    sprintf('%s: %s', $header, implode(', ', $values)),
+                    true
+                );
             }
         }
 

@@ -1,6 +1,6 @@
 {
     "name": "jacobemerick/talus",
-    "description": "",
+    "description": "Microframework with Swagger routing",
     "license": "MIT",
     "authors": [
         {

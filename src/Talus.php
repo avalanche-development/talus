@@ -151,6 +151,13 @@ class Talus implements LoggerAwareInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
+        if ($request->getUri()->getPath() == '/api-docs') {
+            $swaggerDoc = $this->swagger->getDocument();
+            $swaggerDoc = json_encode($swaggerDoc);
+            $response->getBody()->write($swaggerDoc);
+            return $response;
+        }
+
         foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
             $result = $this->matchPath($request, $pathKey, $path);
             if ($result === false) {

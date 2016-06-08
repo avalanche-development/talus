@@ -1,6 +1,6 @@
 <?php
 
-namespace Jacobemerick\Talus;
+namespace AvalancheDevelopment\Talus;
 
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
@@ -25,7 +25,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
             'swagger' => $this->emptySwagger,
         ]);
 
-        $this->assertInstanceOf('Jacobemerick\Talus\Talus', $talus);
+        $this->assertInstanceOf('AvalancheDevelopment\Talus\Talus', $talus);
     }
 
     public function testTalusImplementsLoggerInterface()
@@ -105,7 +105,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testConstructSetsSwagger()
     {
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
         $reflectedSwaggerSpec->setAccessible(true);
 
@@ -121,7 +121,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testGetSwaggerSpecReadable()
     {
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
         $reflectedSwaggerSpec->setAccessible(true);
 
@@ -150,7 +150,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
      */
     public function testGetSwaggerSpecNotReadable()
     {
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
         $reflectedSwaggerSpec->setAccessible(true);
 
@@ -182,7 +182,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
      */
     public function testGetSwaggerSpecInvalidJson()
     {
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
         $reflectedSwaggerSpec->setAccessible(true);
 
@@ -235,7 +235,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         ]);
         $expectedHeaders = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
@@ -274,7 +274,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         }
         $expectedHeaders = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
@@ -313,7 +313,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         }
         $expectedHeaders = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
@@ -345,7 +345,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         echo $body;
         $expectedOutput = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
@@ -374,7 +374,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testGetRequest()
     {
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedRequest = $reflectedTalus->getMethod('getRequest');
         $reflectedRequest->setAccessible(true);
 
@@ -388,7 +388,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testGetResponse()
     {
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedResponse = $reflectedTalus->getMethod('getResponse');
         $reflectedResponse->setAccessible(true);
 
@@ -402,7 +402,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testMapHttpMethod()
     {
-        $reflectedTalus = new ReflectionClass('Jacobemerick\Talus\Talus');
+        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedMapHttpMethod = $reflectedTalus->getMethod('mapHttpMethod');
         $reflectedMapHttpMethod->setAccessible(true);
 

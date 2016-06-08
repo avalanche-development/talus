@@ -1,8 +1,8 @@
 <?php
 
-namespace Jacobemerick\Talus;
+namespace AvalancheDevelopment\Talus;
 
-use Jacobemerick\Talus\Stub\MiddlewareAware as MiddlewareAwareStub;
+use AvalancheDevelopment\Talus\Stub\MiddlewareAware as MiddlewareAwareStub;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 

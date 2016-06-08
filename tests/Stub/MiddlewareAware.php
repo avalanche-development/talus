@@ -1,8 +1,8 @@
 <?php
 
-namespace Jacobemerick\Talus\Stub;
+namespace AvalancheDevelopment\Talus\Stub;
 
-use Jacobemerick\Talus\MiddlewareAwareTrait;
+use AvalancheDevelopment\Talus\MiddlewareAwareTrait;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 

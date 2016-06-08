@@ -4,7 +4,7 @@
  * Middleware trait, heavily influenced by Slim PHP's awesomeness.
  */
 
-namespace Jacobemerick\Talus;
+namespace AvalancheDevelopment\Talus;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

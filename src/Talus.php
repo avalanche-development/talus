@@ -4,7 +4,7 @@
  * What what
  */
 
-namespace Jacobemerick\Talus;
+namespace AvalancheDevelopment\Talus;
 
 use Closure;
 use DomainException;

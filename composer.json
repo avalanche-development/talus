@@ -11,17 +11,11 @@
     "require": {
         "php": ">=5.6.0",
         "psr/log": "^1.0",
-        "thefrozenfire/swagger": "2.0.x-dev#ef27c84532a8d0b98d76fa40381b12b3703d1bfc as 2.0.9",
+        "thefrozenfire/swagger": "^2.0.8",
         "zendframework/zend-diactoros": "^1.3",
         "psr/http-message": "^1.0",
         "container-interop/container-interop": "^1.1"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jacobemerick/PHP-Swagger-Parser"
-        }
-    ],
     "require-dev": {
         "codeclimate/php-test-reporter": "dev-master",
         "phpunit/phpunit": "^5.3"

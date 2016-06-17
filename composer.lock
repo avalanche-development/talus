@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c7015764bc201b61f5e7b722f2e0cb5b",
-    "content-hash": "d1ea786de0247bf82e83001a81262a3b",
+    "hash": "1a09cc0275ee42737515a31706936f6c",
+    "content-hash": "fc02fe24aaaa118d74ee6129b3e0fbd5",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -916,16 +916,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.4.5",
+            "version": "5.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "744a50838ef373be00fb658ce9544905cf587c17"
+                "reference": "2f1fc94b77ea6418bd6a06c64a1dac0645fbce59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/744a50838ef373be00fb658ce9544905cf587c17",
-                "reference": "744a50838ef373be00fb658ce9544905cf587c17",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2f1fc94b77ea6418bd6a06c64a1dac0645fbce59",
+                "reference": "2f1fc94b77ea6418bd6a06c64a1dac0645fbce59",
                 "shasum": ""
             },
             "require": {
@@ -990,7 +990,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-06-15 07:20:05"
+            "time": "2016-06-16 06:01:15"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

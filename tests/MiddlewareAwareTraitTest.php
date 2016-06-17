@@ -76,8 +76,8 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
     {
         $middleware = function ($req, $res, $next) { return $res; };
         $stub = new MiddlewareAwareStub();
-        $request = $this->getMock('Psr\Http\Message\RequestInterface');
-        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $request = $this->createMock('Psr\Http\Message\RequestInterface');
+        $response = $this->createMock('Psr\Http\Message\ResponseInterface');
 
         $reflectedStub = new ReflectionClass($stub);
         $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
@@ -102,8 +102,8 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
     {
         $middleware = function ($req, $res, $next) { return 'foo'; };
         $stub = new MiddlewareAwareStub();
-        $request = $this->getMock('Psr\Http\Message\RequestInterface');
-        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $request = $this->createMock('Psr\Http\Message\RequestInterface');
+        $response = $this->createMock('Psr\Http\Message\ResponseInterface');
 
         $reflectedStub = new ReflectionClass($stub);
         $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
@@ -158,8 +158,8 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
         $decoratedMiddleware = function ($req, $res) use ($middleware, $stub) {
             return call_user_func($middleware, $req, $res, $stub);
         };
-        $request = $this->getMock('Psr\Http\Message\RequestInterface');
-        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $request = $this->createMock('Psr\Http\Message\RequestInterface');
+        $response = $this->createMock('Psr\Http\Message\ResponseInterface');
 
         $reflectedStub = new ReflectionClass($stub);
         $reflectedStack = $reflectedStub->getProperty('stack');
@@ -175,8 +175,8 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
     {
         $middleware = function ($req, $res, $next) {};
         $stub = new MiddlewareAwareStub();
-        $request = $this->getMock('Psr\Http\Message\RequestInterface');
-        $response = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $request = $this->createMock('Psr\Http\Message\RequestInterface');
+        $response = $this->createMock('Psr\Http\Message\ResponseInterface');
 
         $stub->callStack($request, $response);
 

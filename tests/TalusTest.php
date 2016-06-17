@@ -39,7 +39,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testConstructSetsContainer()
     {
-        $container = $this->getMock('Interop\Container\ContainerInterface');
+        $container = $this->createMock('Interop\Container\ContainerInterface');
         $talus = new Talus([
             'container' => $container,
             'swagger' => $this->emptySwagger,
@@ -72,7 +72,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testConstructSetsLogger()
     {
-        $logger = $this->getMock('Psr\Log\LoggerInterface');
+        $logger = $this->createMock('Psr\Log\LoggerInterface');
         $talus = new Talus([
             'logger' => $logger,
             'swagger' => $this->emptySwagger,
@@ -239,7 +239,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
         $mockResponse->method('getStatusCode')->willReturn($statusCode);
         $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
 
@@ -278,7 +278,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
         $mockResponse->method('getStatusCode')->willReturn($statusCode);
         $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
         $mockResponse->method('getHeaders')->willReturn($headers);
@@ -317,7 +317,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
         $mockResponse->method('getStatusCode')->willReturn($statusCode);
         $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
         $mockResponse->method('getHeaders')->willReturn($headers);
@@ -349,7 +349,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->getMock('Psr\Http\Message\ResponseInterface');
+        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
         $mockResponse->method('getStatusCode')->willReturn($statusCode);
         $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
         $mockResponse->method('getBody')->willReturn($body);
@@ -406,7 +406,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedMapHttpMethod = $reflectedTalus->getMethod('mapHttpMethod');
         $reflectedMapHttpMethod->setAccessible(true);
 
-        $mockRequest = $this->getMock('Psr\Http\Message\RequestInterface');
+        $mockRequest = $this->createMock('Psr\Http\Message\RequestInterface');
         $mockRequest->method('getMethod')->willReturn('POST');
 
         $talus = new Talus([

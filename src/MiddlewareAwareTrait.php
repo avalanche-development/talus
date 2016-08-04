@@ -19,7 +19,7 @@ trait MiddlewareAwareTrait
 
     /**
      * @param callable $callable
-     * @returns integer
+     * @return integer
      */
     public function addMiddleware(callable $callable)
     {
@@ -34,7 +34,7 @@ trait MiddlewareAwareTrait
 
     /**
      * @param callable $callable
-     * @returns callable
+     * @return callable
      */
     protected function decorateMiddleware(callable $callable)
     {
@@ -50,7 +50,7 @@ trait MiddlewareAwareTrait
 
     /**
      * @param callable $callable
-     * @returns integer
+     * @return integer
      */
     protected function seedStack(callable $callable)
     {
@@ -65,7 +65,7 @@ trait MiddlewareAwareTrait
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @returns RequestInterface
+     * @return RequestInterface
      */
     public function callStack(RequestInterface $request, ResponseInterface $response)
     {

@@ -147,7 +147,7 @@ class Talus implements LoggerAwareInterface
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @returns ResponseInterface
+     * @return ResponseInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {

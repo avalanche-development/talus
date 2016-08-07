@@ -6,6 +6,7 @@
 
 namespace AvalancheDevelopment\Talus;
 
+use gossi\swagger\Path as SwaggerPath;
 use gossi\swagger\Swagger;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
@@ -119,15 +120,15 @@ class Talus implements LoggerAwareInterface
         }
 
         foreach ($this->swagger->getPaths() as $path) {
-            $result = $this->matchPath($request, $path);
-            if ($result === false) {
+            $matchResult = $this->matchPath($request, $path);
+            if ($matchResult === false) {
                 continue;
             }
-            $request = $result;
+            $request = $matchResult;
 
             try {
-                $httpMethodName = $this->mapHttpMethod($request);
-                $operation = $path->$httpMethodName();
+                $method = strtolower($request->getMethod());
+                $operation = $path->getOperation($method);
             } catch (Exception $e) {
                 // todo 404 handler
                 throw $e;
@@ -138,7 +139,7 @@ class Talus implements LoggerAwareInterface
             // todo should verify that operationId exists
             try {
                 // todo this could be operation-level
-                $controllerName = $path->getVendorExtension('swagger-router-controller');
+                $controllerName = $path->getExtensions()->get('swagger-router-controller');
                 $methodName = $operation->getOperationId();
             } catch (Exception $e) {
                 // todo handle straight functions
@@ -158,7 +159,7 @@ class Talus implements LoggerAwareInterface
     // todo a better response
     protected function matchPath(RequestInterface $request, SwaggerPath $swaggerPath)
     {
-        if ($request->getUri()->getPath() == $pathKey) {
+        if ($request->getUri()->getPath() == $swaggerPath->getPath()) {
             return $request;
         }
 
@@ -220,17 +221,5 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @return string
-     */
-    protected function mapHttpMethod(RequestInterface $request)
-    {
-        $httpMethod = $request->getMethod();
-        $httpMethod = strtolower($httpMethod);
-        $httpMethod = ucwords($httpMethod);
-        return "get{$httpMethod}";
     }
 }

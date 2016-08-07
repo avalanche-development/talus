@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "af59cdc80f32b36eb754676d77d84adb",
-    "content-hash": "680ee358f6ea390a67959ade6b8d6714",
+    "hash": "7adc4b186bf3a26e1f3547e7e84c5433",
+    "content-hash": "ae11c010d97a5ff997beb6af19d70217",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -36,17 +36,12 @@
         },
         {
             "name": "gossi/swagger",
-            "version": "v0.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/gossi/swagger.git",
-                "reference": "f8b47ebed177ec30fb6e5699b9ae00b91e83e3c4"
-            },
+            "version": "dev-fix/extension-parsing",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/gossi/swagger/zipball/f8b47ebed177ec30fb6e5699b9ae00b91e83e3c4",
-                "reference": "f8b47ebed177ec30fb6e5699b9ae00b91e83e3c4",
-                "shasum": ""
+                "type": "path",
+                "url": "../swagger",
+                "reference": "3a949439b13743801a15fd799813f268996552ff",
+                "shasum": null
             },
             "require": {
                 "phootwork/collection": "~1",
@@ -63,7 +58,11 @@
                     "gossi\\swagger\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "gossi\\swagger\\tests\\": "tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -77,8 +76,7 @@
             "keywords": [
                 "api",
                 "swagger"
-            ],
-            "time": "2016-06-17 12:46:49"
+            ]
         },
         {
             "name": "phootwork/collection",
@@ -235,16 +233,16 @@
         },
         {
             "name": "psr/http-message",
-            "version": "1.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
-                "reference": "85d63699f0dbedb190bbd4b0d2b9dc707ea4c298"
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message/zipball/85d63699f0dbedb190bbd4b0d2b9dc707ea4c298",
-                "reference": "85d63699f0dbedb190bbd4b0d2b9dc707ea4c298",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+                "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
                 "shasum": ""
             },
             "require": {
@@ -272,6 +270,7 @@
                 }
             ],
             "description": "Common interface for HTTP messages",
+            "homepage": "https://github.com/php-fig/http-message",
             "keywords": [
                 "http",
                 "http-message",
@@ -280,7 +279,7 @@
                 "request",
                 "response"
             ],
-            "time": "2015-05-04 20:22:00"
+            "time": "2016-08-06 14:39:51"
         },
         {
             "name": "psr/log",
@@ -1076,16 +1075,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.4.8",
+            "version": "5.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3132365e1430c091f208e120b8845d39c25f20e6"
+                "reference": "c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3132365e1430c091f208e120b8845d39c25f20e6",
-                "reference": "3132365e1430c091f208e120b8845d39c25f20e6",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b",
+                "reference": "c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b",
                 "shasum": ""
             },
             "require": {
@@ -1124,7 +1123,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.4.x-dev"
+                    "dev-master": "5.5.x-dev"
                 }
             },
             "autoload": {
@@ -1150,7 +1149,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-07-26 14:48:00"
+            "time": "2016-08-05 04:49:02"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2213,7 +2212,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "gossi/swagger": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

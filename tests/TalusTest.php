@@ -2,6 +2,7 @@
 
 namespace AvalancheDevelopment\Talus;
 
+use gossi\swagger\Swagger;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 use stdclass;
@@ -10,19 +11,10 @@ use Swagger\Document as SwaggerDocument;
 class TalusTest extends PHPUnit_Framework_TestCase
 {
 
-    protected $emptySwagger;
-
-    public function setUp()
-    {
-        $this->emptySwagger = fopen('empty-swagger.json', 'w+');
-        fwrite($this->emptySwagger, '{}');
-        rewind($this->emptySwagger);
-    }
-
     public function testIsInstanceOfTalus()
     {
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
 
         $this->assertInstanceOf('AvalancheDevelopment\Talus\Talus', $talus);
@@ -31,7 +23,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
     public function testTalusImplementsLoggerInterface()
     {
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
 
         $this->assertInstanceOf('Psr\Log\LoggerAwareInterface', $talus);
@@ -42,7 +34,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $container = $this->createMock('Interop\Container\ContainerInterface');
         $talus = new Talus([
             'container' => $container,
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
 
         $this->assertAttributeSame($container, 'container', $talus);
@@ -57,14 +49,14 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $container = new stdclass();
         $talus = new Talus([
             'container' => $container,
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
     }
 
     public function testConstructSetsNullLogger()
     {
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
 
         $this->assertAttributeInstanceOf('Psr\Log\NullLogger', 'logger', $talus);
@@ -75,7 +67,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $logger = $this->createMock('Psr\Log\LoggerInterface');
         $talus = new Talus([
             'logger' => $logger,
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
 
         $this->assertAttributeSame($logger, 'logger', $talus);
@@ -90,7 +82,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $logger = new stdclass();
         $talus = new Talus([
             'logger' => $logger,
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
     }
 
@@ -105,112 +97,19 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testConstructSetsSwagger()
     {
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
-        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
-        $reflectedSwaggerSpec->setAccessible(true);
-
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
-        rewind($this->emptySwagger);
-        $spec = $reflectedSwaggerSpec->invokeArgs($talus, [$this->emptySwagger]);
-        $swagger = new SwaggerDocument($spec);
+        $swagger = new Swagger(['swagger']);
 
         $this->assertAttributeEquals($swagger, 'swagger', $talus);
-    }
-
-    public function testGetSwaggerSpecReadable()
-    {
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
-        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
-        $reflectedSwaggerSpec->setAccessible(true);
-
-        $talus = new Talus([
-            'swagger' => $this->emptySwagger,
-        ]);
-
-        $expectedSpec = (object) [
-            'key' => 'value',
-        ];
-        $encodedSpec = json_encode($expectedSpec);
-        $swagger = fopen('empty-swagger-readable.json', 'w+');
-        fwrite($swagger, $encodedSpec);
-        rewind($swagger);
-        $spec = $reflectedSwaggerSpec->invokeArgs($talus, [$swagger]);
-
-        $this->assertEquals($expectedSpec, $spec);
-
-        fclose($swagger);
-        unlink('empty-swagger-readable.json');
-    }
-
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage swagger stream is not readable
-     */
-    public function testGetSwaggerSpecNotReadable()
-    {
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
-        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
-        $reflectedSwaggerSpec->setAccessible(true);
-
-        $talus = new Talus([
-            'swagger' => $this->emptySwagger,
-        ]);
-
-        $expectedSpec = (object) [
-            'key' => 'value',
-        ];
-        $encodedSpec = json_encode($expectedSpec);
-        $swagger = fopen('empty-swagger-not-readable.json', 'w');
-        fwrite($swagger, $encodedSpec);
-        rewind($swagger);
-
-        try {
-            $reflectedSwaggerSpec->invokeArgs($talus, [$swagger]);
-        } catch (Exception $e) {
-            throw $e;
-        } finally {
-            fclose($swagger);
-            unlink('empty-swagger-not-readable.json');
-        }
-    }
-
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage swagger stream is not parseable
-     */
-    public function testGetSwaggerSpecInvalidJson()
-    {
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
-        $reflectedSwaggerSpec = $reflectedTalus->getMethod('getSwaggerSpec');
-        $reflectedSwaggerSpec->setAccessible(true);
-
-        $talus = new Talus([
-            'swagger' => $this->emptySwagger,
-        ]);
-        fclose($this->emptySwagger);
-
-        $content = 'words';
-        $swagger = fopen('empty-swagger-invalid-json.json', 'w+');
-        fwrite($swagger, $content);
-        rewind($swagger);
-
-        try {
-            $reflectedSwaggerSpec->invokeArgs($talus, [$swagger]);
-        } catch (Exception $e) {
-            throw $e;
-        } finally {
-            fclose($swagger);
-            unlink('empty-swagger-invalid-json.json');
-        }
     }
 
     public function testSetErrorHandler()
     {
         $errorHandler = function ($req, $res, $e) {};
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
         $talus->setErrorHandler($errorHandler);
 
@@ -246,7 +145,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString($expectedHeaders);
 
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
@@ -286,7 +185,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString($expectedHeaders);
 
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
@@ -325,7 +224,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString($expectedHeaders);
 
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
@@ -357,7 +256,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString($expectedOutput);
 
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
@@ -379,7 +278,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedRequest->setAccessible(true);
 
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
         $request = $reflectedRequest->invoke($talus);
 
@@ -393,34 +292,10 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedResponse->setAccessible(true);
 
         $talus = new Talus([
-            'swagger' => $this->emptySwagger,
+            'swagger' => ['swagger'],
         ]);
         $response = $reflectedResponse->invoke($talus);
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
-    }
-
-    public function testMapHttpMethod()
-    {
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
-        $reflectedMapHttpMethod = $reflectedTalus->getMethod('mapHttpMethod');
-        $reflectedMapHttpMethod->setAccessible(true);
-
-        $mockRequest = $this->createMock('Psr\Http\Message\RequestInterface');
-        $mockRequest->method('getMethod')->willReturn('POST');
-
-        $talus = new Talus([
-            'swagger' => $this->emptySwagger,
-        ]);
-        $httpMethodName = $reflectedMapHttpMethod->invokeArgs($talus, [$mockRequest]);
-
-        $this->assertEquals('getPost', $httpMethodName);
-    }
-
-    public function tearDown()
-    {
-        $this->emptySwagger = fopen('empty-swagger.json', 'w');
-        fclose($this->emptySwagger);
-        unlink('empty-swagger.json');
     }
 }

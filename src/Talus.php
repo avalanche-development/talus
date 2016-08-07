@@ -6,10 +6,7 @@
 
 namespace AvalancheDevelopment\Talus;
 
-use Closure;
-use DomainException;
-use Exception;
-use InvalidArgumentException;
+use gossi\swagger\Swagger;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,11 +14,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Swagger\Document as SwaggerDocument;
-use Swagger\Object\Operation as SwaggerOperation;
-use Swagger\Object\PathItem as SwaggerPath;
-use Swagger\SchemaResolver;
-use Swagger\Json\Pointer as SwaggerPointer;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -35,18 +27,10 @@ class Talus implements LoggerAwareInterface
     /** @var ContainerInterface */
     protected $container;
 
-    /** @var SwaggerDocument */
+    /** @var Swagger */
     protected $swagger;
 
-    /** @var array */
-    protected static $readableModes = [
-        'r',
-        'rb',
-        'w+',
-        'w+b',
-    ];
-
-    /** @var Closure */
+    /** @var \Closure */
     protected $errorHandler;
 
     /**
@@ -56,14 +40,14 @@ class Talus implements LoggerAwareInterface
     {
         if (!empty($config['container'])) {
             if (!($config['container'] instanceof ContainerInterface)) {
-                throw new InvalidArgumentException('container must be instance of ContainerInterface');
+                throw new \InvalidArgumentException('container must be instance of ContainerInterface');
             }
             $this->container = $config['container'];
         }
 
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
-                throw new InvalidArgumentException('logger must be instance of LoggerInterface');
+                throw new \InvalidArgumentException('logger must be instance of LoggerInterface');
             }
             $this->logger = $config['logger'];
         } else {
@@ -71,40 +55,16 @@ class Talus implements LoggerAwareInterface
         }
 
         if (!empty($config['swagger'])) {
-            $spec = $this->getSwaggerSpec($config['swagger']);
-            $this->swagger = new SwaggerDocument($spec);
+            $this->swagger = new Swagger($config['swagger']);
         } else {
-            throw new DomainException('missing swagger information');
+            throw new \DomainException('missing swagger information');
         }
     }
 
     /**
-     * @param streamable $resource
-     * @return array
+     * @param \Closure $errorHandler
      */
-    protected function getSwaggerSpec($resource)
-    {
-        $meta = stream_get_meta_data($resource);
-        if (!in_array($meta['mode'], self::$readableModes)) {
-            throw new DomainException('swagger stream is not readable');
-        }
-
-        $spec = '';
-        while (!feof($resource)) {
-            $spec .= fread($resource, 8192);
-        }
-
-        $spec = json_decode($spec);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new DomainException('swagger stream is not parseable');
-        }
-        return $spec;
-    }
-
-    /**
-     * @param Closure $errorHandler
-     */
-    public function setErrorHandler(Closure $errorHandler)
+    public function setErrorHandler(\Closure $errorHandler)
     {
         $this->errorHandler = $errorHandler;
     }
@@ -152,14 +112,14 @@ class Talus implements LoggerAwareInterface
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         if ($request->getUri()->getPath() == '/api-docs') {
-            $swaggerDoc = $this->swagger->getDocument();
+            $swaggerDoc = $this->swagger->toArray();
             $swaggerDoc = json_encode($swaggerDoc);
             $response->getBody()->write($swaggerDoc);
             return $response;
         }
 
-        foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
-            $result = $this->matchPath($request, $pathKey, $path);
+        foreach ($this->swagger->getPaths() as $path) {
+            $result = $this->matchPath($request, $path);
             if ($result === false) {
                 continue;
             }
@@ -192,12 +152,11 @@ class Talus implements LoggerAwareInterface
 
     /**
      * @param RequestInterface $request
-     * @param string $pathKey
      * @param SwaggerPath $swaggerPath
      * @response boolean
      */
     // todo a better response
-    protected function matchPath(RequestInterface $request, $pathKey, SwaggerPath $swaggerPath)
+    protected function matchPath(RequestInterface $request, SwaggerPath $swaggerPath)
     {
         if ($request->getUri()->getPath() == $pathKey) {
             return $request;

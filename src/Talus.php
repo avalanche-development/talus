@@ -25,13 +25,13 @@ class Talus implements LoggerAwareInterface
 
     use MiddlewareAwareTrait;
 
-    /** @var ContainerInterface */
+    /** @var ContainerInterface $container */
     protected $container;
 
-    /** @var Swagger */
+    /** @var Swagger $swagger */
     protected $swagger;
 
-    /** @var \Closure */
+    /** @var \Closure $errorHandler */
     protected $errorHandler;
 
     /**
@@ -80,7 +80,7 @@ class Talus implements LoggerAwareInterface
         try {
             $result = $this->callStack($request, $response);
         } catch (\Exception $e) {
-            $result = ($this->errorHandler)($request, $response, $e);
+            $result = $this->errorHandler->__invoke($request, $response, $e);
         }
 
         $this->outputResponse($result);
@@ -175,17 +175,19 @@ class Talus implements LoggerAwareInterface
             return false;
         }
 
-        // var_dump($pathMatches); exit;
         // loop da loop
-
-                $method = strtolower($request->getMethod());
-                $operation = $swaggerPath->getOperation($method);
-
+        // todo feels weird that we pull operation out here and then do it again later
+        $method = strtolower($request->getMethod());
+        $operation = $swaggerPath->getOperation($method);
         foreach ($pathMatches[1] as $pathParam) {
             foreach ($operation->getParameters() as $parameter) {
                 if ($pathParam == $parameter->getName()) {
                     if ($parameter->getType() == 'string') {
-                        $pathKey = str_replace('{' . $pathParam . '}', '(?P<' . $pathParam . '>\w+)', $swaggerPath->getPath());
+                        $pathKey = str_replace(
+                            '{' . $pathParam . '}',
+                            '(?P<' . $pathParam . '>\w+)',
+                            $swaggerPath->getPath()
+                        );
                         continue 2;
                     }
                 }
@@ -193,7 +195,11 @@ class Talus implements LoggerAwareInterface
             return false;
         }
 
-        $matchedVariablePath = preg_match('@' . $pathKey . '@', $request->getUri()->getPath(), $pathMatches);
+        $matchedVariablePath = preg_match(
+            '@' . $pathKey . '@',
+            $request->getUri()->getPath(),
+            $pathMatches
+        );
         if (!$matchedVariablePath) {
             return false;
         }

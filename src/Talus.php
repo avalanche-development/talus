@@ -6,10 +6,8 @@
 
 namespace AvalancheDevelopment\Talus;
 
-use Closure;
-use DomainException;
-use Exception;
-use InvalidArgumentException;
+use gossi\swagger\Path as SwaggerPath;
+use gossi\swagger\Swagger;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,11 +15,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Swagger\Document as SwaggerDocument;
-use Swagger\Object\Operation as SwaggerOperation;
-use Swagger\Object\PathItem as SwaggerPath;
-use Swagger\SchemaResolver;
-use Swagger\Json\Pointer as SwaggerPointer;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -32,21 +25,13 @@ class Talus implements LoggerAwareInterface
 
     use MiddlewareAwareTrait;
 
-    /** @var ContainerInterface */
+    /** @var ContainerInterface $container */
     protected $container;
 
-    /** @var SwaggerDocument */
+    /** @var Swagger $swagger */
     protected $swagger;
 
-    /** @var array */
-    protected static $readableModes = [
-        'r',
-        'rb',
-        'w+',
-        'w+b',
-    ];
-
-    /** @var Closure */
+    /** @var \Closure $errorHandler */
     protected $errorHandler;
 
     /**
@@ -56,14 +41,14 @@ class Talus implements LoggerAwareInterface
     {
         if (!empty($config['container'])) {
             if (!($config['container'] instanceof ContainerInterface)) {
-                throw new InvalidArgumentException('container must be instance of ContainerInterface');
+                throw new \InvalidArgumentException('container must be instance of ContainerInterface');
             }
             $this->container = $config['container'];
         }
 
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
-                throw new InvalidArgumentException('logger must be instance of LoggerInterface');
+                throw new \InvalidArgumentException('logger must be instance of LoggerInterface');
             }
             $this->logger = $config['logger'];
         } else {
@@ -71,40 +56,16 @@ class Talus implements LoggerAwareInterface
         }
 
         if (!empty($config['swagger'])) {
-            $spec = $this->getSwaggerSpec($config['swagger']);
-            $this->swagger = new SwaggerDocument($spec);
+            $this->swagger = new Swagger($config['swagger']);
         } else {
-            throw new DomainException('missing swagger information');
+            throw new \DomainException('missing swagger information');
         }
     }
 
     /**
-     * @param streamable $resource
-     * @return array
+     * @param \Closure $errorHandler
      */
-    protected function getSwaggerSpec($resource)
-    {
-        $meta = stream_get_meta_data($resource);
-        if (!in_array($meta['mode'], self::$readableModes)) {
-            throw new DomainException('swagger stream is not readable');
-        }
-
-        $spec = '';
-        while (!feof($resource)) {
-            $spec .= fread($resource, 8192);
-        }
-
-        $spec = json_decode($spec);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new DomainException('swagger stream is not parseable');
-        }
-        return $spec;
-    }
-
-    /**
-     * @param Closure $errorHandler
-     */
-    public function setErrorHandler(Closure $errorHandler)
+    public function setErrorHandler(\Closure $errorHandler)
     {
         $this->errorHandler = $errorHandler;
     }
@@ -116,7 +77,12 @@ class Talus implements LoggerAwareInterface
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
-        $result = $this->callStack($request, $response);
+        try {
+            $result = $this->callStack($request, $response);
+        } catch (\Exception $e) {
+            $result = $this->errorHandler->__invoke($request, $response, $e);
+        }
+
         $this->outputResponse($result);
     }
 
@@ -147,29 +113,28 @@ class Talus implements LoggerAwareInterface
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @returns ResponseInterface
+     * @return ResponseInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         if ($request->getUri()->getPath() == '/api-docs') {
-            $swaggerDoc = $this->swagger->getDocument();
+            $swaggerDoc = $this->swagger->toArray();
             $swaggerDoc = json_encode($swaggerDoc);
             $response->getBody()->write($swaggerDoc);
             return $response;
         }
 
-        foreach ($this->swagger->getPaths()->getAll() as $pathKey => $path) {
-            $result = $this->matchPath($request, $pathKey, $path);
-            if ($result === false) {
+        foreach ($this->swagger->getPaths() as $path) {
+            $matchResult = $this->matchPath($request, $path);
+            if ($matchResult === false) {
                 continue;
             }
-            $request = $result;
+            $request = $matchResult;
 
             try {
-                $httpMethodName = $this->mapHttpMethod($request);
-                $operation = $path->$httpMethodName();
-            } catch (Exception $e) {
-                // todo 404 handler
+                $method = strtolower($request->getMethod());
+                $operation = $path->getOperation($method);
+            } catch (\Exception $e) {
                 throw $e;
             }
 
@@ -178,7 +143,7 @@ class Talus implements LoggerAwareInterface
             // todo should verify that operationId exists
             try {
                 // todo this could be operation-level
-                $controllerName = $path->getVendorExtension('swagger-router-controller');
+                $controllerName = $path->getExtensions()->get('swagger-router-controller');
                 $methodName = $operation->getOperationId();
             } catch (Exception $e) {
                 // todo handle straight functions
@@ -188,42 +153,41 @@ class Talus implements LoggerAwareInterface
             $controller = new $controllerName($this->container);
             return $controller->$methodName($request, $response);
         }
+
+        throw new \Exception('Path not found');
     }
 
     /**
      * @param RequestInterface $request
-     * @param string $pathKey
      * @param SwaggerPath $swaggerPath
      * @response boolean
      */
     // todo a better response
-    protected function matchPath(RequestInterface $request, $pathKey, SwaggerPath $swaggerPath)
+    protected function matchPath(RequestInterface $request, SwaggerPath $swaggerPath)
     {
-        if ($request->getUri()->getPath() == $pathKey) {
+        if ($request->getUri()->getPath() === $swaggerPath->getPath()) {
             return $request;
         }
 
         // todo what are acceptable path param values, anyways?
-        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $pathKey, $pathMatches);
+        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $swaggerPath->getPath(), $pathMatches);
         if (!$isVariablePath) {
             return false;
         }
 
         // loop da loop
+        // todo feels weird that we pull operation out here and then do it again later
+        $method = strtolower($request->getMethod());
+        $operation = $swaggerPath->getOperation($method);
         foreach ($pathMatches[1] as $pathParam) {
-            foreach ($swaggerPath->getParameters() as $parameter) {
-                // why oh why is this necessary
-                if ($parameter->hasDocumentProperty('$ref')) {
-                    $resolver = new SchemaResolver($this->swagger);
-                    $pointer = $parameter->getDocumentProperty('$ref');
-                    $pointer = substr($pointer, 2);
-                    $pointer = new SwaggerPointer($pointer);
-                    $parameter = $resolver->findTypeAtPointer($pointer);
-                }
+            foreach ($operation->getParameters() as $parameter) {
                 if ($pathParam == $parameter->getName()) {
-                    // todo extract extract will robinson
-                    if ($parameter->getDocumentProperty('type') == 'string') {
-                        $pathKey = str_replace('{' . $pathParam . '}', '(?P<' . $pathParam . '>\w+)', $pathKey);
+                    if ($parameter->getType() == 'string') {
+                        $pathKey = str_replace(
+                            '{' . $pathParam . '}',
+                            '(?P<' . $pathParam . '>\w+)',
+                            $swaggerPath->getPath()
+                        );
                         continue 2;
                     }
                 }
@@ -231,7 +195,11 @@ class Talus implements LoggerAwareInterface
             return false;
         }
 
-        $matchedVariablePath = preg_match('@' . $pathKey . '@', $request->getUri()->getPath(), $pathMatches);
+        $matchedVariablePath = preg_match(
+            '@' . $pathKey . '@',
+            $request->getUri()->getPath(),
+            $pathMatches
+        );
         if (!$matchedVariablePath) {
             return false;
         }
@@ -261,17 +229,5 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @return string
-     */
-    protected function mapHttpMethod(RequestInterface $request)
-    {
-        $httpMethod = $request->getMethod();
-        $httpMethod = strtolower($httpMethod);
-        $httpMethod = ucwords($httpMethod);
-        return "get{$httpMethod}";
     }
 }

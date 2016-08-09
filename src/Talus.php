@@ -77,7 +77,12 @@ class Talus implements LoggerAwareInterface
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
-        $result = $this->callStack($request, $response);
+        try {
+            $result = $this->callStack($request, $response);
+        } catch (\Exception $e) {
+            $result = ($this->errorHandler)($request, $response, $e);
+        }
+
         $this->outputResponse($result);
     }
 
@@ -129,8 +134,7 @@ class Talus implements LoggerAwareInterface
             try {
                 $method = strtolower($request->getMethod());
                 $operation = $path->getOperation($method);
-            } catch (Exception $e) {
-                // todo 404 handler
+            } catch (\Exception $e) {
                 throw $e;
             }
 
@@ -149,6 +153,8 @@ class Talus implements LoggerAwareInterface
             $controller = new $controllerName($this->container);
             return $controller->$methodName($request, $response);
         }
+
+        throw new \Exception('Path not found');
     }
 
     /**
@@ -159,31 +165,27 @@ class Talus implements LoggerAwareInterface
     // todo a better response
     protected function matchPath(RequestInterface $request, SwaggerPath $swaggerPath)
     {
-        if ($request->getUri()->getPath() == $swaggerPath->getPath()) {
+        if ($request->getUri()->getPath() === $swaggerPath->getPath()) {
             return $request;
         }
 
         // todo what are acceptable path param values, anyways?
-        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $pathKey, $pathMatches);
+        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $swaggerPath->getPath(), $pathMatches);
         if (!$isVariablePath) {
             return false;
         }
 
+        // var_dump($pathMatches); exit;
         // loop da loop
+
+                $method = strtolower($request->getMethod());
+                $operation = $swaggerPath->getOperation($method);
+
         foreach ($pathMatches[1] as $pathParam) {
-            foreach ($swaggerPath->getParameters() as $parameter) {
-                // why oh why is this necessary
-                if ($parameter->hasDocumentProperty('$ref')) {
-                    $resolver = new SchemaResolver($this->swagger);
-                    $pointer = $parameter->getDocumentProperty('$ref');
-                    $pointer = substr($pointer, 2);
-                    $pointer = new SwaggerPointer($pointer);
-                    $parameter = $resolver->findTypeAtPointer($pointer);
-                }
+            foreach ($operation->getParameters() as $parameter) {
                 if ($pathParam == $parameter->getName()) {
-                    // todo extract extract will robinson
-                    if ($parameter->getDocumentProperty('type') == 'string') {
-                        $pathKey = str_replace('{' . $pathParam . '}', '(?P<' . $pathParam . '>\w+)', $pathKey);
+                    if ($parameter->getType() == 'string') {
+                        $pathKey = str_replace('{' . $pathParam . '}', '(?P<' . $pathParam . '>\w+)', $swaggerPath->getPath());
                         continue 2;
                     }
                 }

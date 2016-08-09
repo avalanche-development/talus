@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7adc4b186bf3a26e1f3547e7e84c5433",
-    "content-hash": "ae11c010d97a5ff997beb6af19d70217",
+    "hash": "f81ae05ba8d0bdb3ac14650dd316ecbb",
+    "content-hash": "7d6329604cf6aa06bc683a95b7b62e5f",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -37,11 +37,16 @@
         {
             "name": "gossi/swagger",
             "version": "dev-fix/extension-parsing",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jacobemerick/swagger.git",
+                "reference": "3a949439b13743801a15fd799813f268996552ff"
+            },
             "dist": {
-                "type": "path",
-                "url": "../swagger",
+                "type": "zip",
+                "url": "https://api.github.com/repos/jacobemerick/swagger/zipball/3a949439b13743801a15fd799813f268996552ff",
                 "reference": "3a949439b13743801a15fd799813f268996552ff",
-                "shasum": null
+                "shasum": ""
             },
             "require": {
                 "phootwork/collection": "~1",
@@ -76,7 +81,11 @@
             "keywords": [
                 "api",
                 "swagger"
-            ]
+            ],
+            "support": {
+                "source": "https://github.com/jacobemerick/swagger/tree/fix/extension-parsing"
+            },
+            "time": "2016-08-04 22:59:10"
         },
         {
             "name": "phootwork/collection",
@@ -2210,7 +2219,14 @@
             "time": "2015-08-24 13:29:44"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "0.2.3",
+            "alias_normalized": "0.2.3.0",
+            "version": "dev-fix/extension-parsing",
+            "package": "gossi/swagger"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "gossi/swagger": 20

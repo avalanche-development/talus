@@ -63,9 +63,9 @@ class Talus implements LoggerAwareInterface
     }
 
     /**
-     * @param \Closure $errorHandler
+     * @param callable $errorHandler
      */
-    public function setErrorHandler(\Closure $errorHandler)
+    public function setErrorHandler(callable $errorHandler)
     {
         $this->errorHandler = $errorHandler;
     }

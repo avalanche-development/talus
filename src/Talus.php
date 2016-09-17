@@ -134,7 +134,7 @@ class Talus implements LoggerAwareInterface
 
             try {
                 $method = strtolower($request->getMethod());
-                $operation = $path->getOperation($method);
+                $operation = $pathItem[$method];
             } catch (Exception $e) {
                 throw $e;
             }
@@ -144,8 +144,8 @@ class Talus implements LoggerAwareInterface
             // todo should verify that operationId exists
             try {
                 // todo this could be operation-level
-                $controllerName = $path->getExtensions()->get('swagger-router-controller');
-                $methodName = $operation->getOperationId();
+                $controllerName = $pathItem['x-swagger-router-controller'];
+                $methodName = $operation['operationId'];
             } catch (Exception $e) {
                 // todo handle straight functions
                 throw $e;

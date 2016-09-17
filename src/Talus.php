@@ -10,8 +10,6 @@ use DomainException;
 use Exception;
 use InvalidArgumentException;
 
-use gossi\swagger\Path as SwaggerPath;
-use gossi\swagger\Swagger;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -32,10 +30,10 @@ class Talus implements LoggerAwareInterface
     /** @var ContainerInterface $container */
     protected $container;
 
-    /** @var Swagger $swagger */
+    /** @var array $swagger */
     protected $swagger;
 
-    /** @var \Closure $errorHandler */
+    /** @var callable $errorHandler */
     protected $errorHandler;
 
     /**
@@ -60,7 +58,7 @@ class Talus implements LoggerAwareInterface
         }
 
         if (!empty($config['swagger'])) {
-            $this->swagger = new Swagger($config['swagger']);
+            $this->swagger = $config['swagger'];
         } else {
             throw new DomainException('missing swagger information');
         }
@@ -122,14 +120,13 @@ class Talus implements LoggerAwareInterface
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         if ($request->getUri()->getPath() == '/api-docs') {
-            $swaggerDoc = $this->swagger->toArray();
-            $swaggerDoc = json_encode($swaggerDoc);
+            $swaggerDoc = json_encode($this->swagger); // todo handle errors
             $response->getBody()->write($swaggerDoc);
             return $response;
         }
 
-        foreach ($this->swagger->getPaths() as $path) {
-            $matchResult = $this->matchPath($request, $path);
+        foreach ($this->swagger['paths'] as $route => $pathItem) {
+            $matchResult = $this->matchPath($request, $route, $pathItem);
             if ($matchResult === false) {
                 continue;
             }
@@ -163,18 +160,19 @@ class Talus implements LoggerAwareInterface
 
     /**
      * @param RequestInterface $request
-     * @param SwaggerPath $swaggerPath
+     * @param string $route
+     * @param array $pathItem
      * @response boolean
      */
     // todo a better response
-    protected function matchPath(RequestInterface $request, SwaggerPath $swaggerPath)
+    protected function matchPath(RequestInterface $request, $route, array $pathItem)
     {
-        if ($request->getUri()->getPath() === $swaggerPath->getPath()) {
+        if ($request->getUri()->getPath() === $route) {
             return $request;
         }
 
         // todo what are acceptable path param values, anyways?
-        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $swaggerPath->getPath(), $pathMatches);
+        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $route, $pathMatches);
         if (!$isVariablePath) {
             return false;
         }
@@ -182,15 +180,15 @@ class Talus implements LoggerAwareInterface
         // loop da loop
         // todo feels weird that we pull operation out here and then do it again later
         $method = strtolower($request->getMethod());
-        $operation = $swaggerPath->getOperation($method);
+        $operation = $pathItem[$method]; // todo invalid operations?
         foreach ($pathMatches[1] as $pathParam) {
-            foreach ($operation->getParameters() as $parameter) {
-                if ($pathParam == $parameter->getName()) {
-                    if ($parameter->getType() == 'string') {
+            foreach ($operation['parameters'] as $parameter) {
+                if ($pathParam == $parameter['name']) {
+                    if ($parameter['type'] == 'string') {
                         $pathKey = str_replace(
                             '{' . $pathParam . '}',
                             '(?P<' . $pathParam . '>\w+)',
-                            $swaggerPath->getPath()
+                            $route
                         );
                         continue 2;
                     }

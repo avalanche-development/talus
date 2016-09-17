@@ -6,6 +6,10 @@
 
 namespace AvalancheDevelopment\Talus;
 
+use DomainException;
+use Exception;
+use InvalidArgumentException;
+
 use gossi\swagger\Path as SwaggerPath;
 use gossi\swagger\Swagger;
 use Interop\Container\ContainerInterface;
@@ -41,14 +45,14 @@ class Talus implements LoggerAwareInterface
     {
         if (!empty($config['container'])) {
             if (!($config['container'] instanceof ContainerInterface)) {
-                throw new \InvalidArgumentException('container must be instance of ContainerInterface');
+                throw new InvalidArgumentException('container must be instance of ContainerInterface');
             }
             $this->container = $config['container'];
         }
 
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
-                throw new \InvalidArgumentException('logger must be instance of LoggerInterface');
+                throw new InvalidArgumentException('logger must be instance of LoggerInterface');
             }
             $this->logger = $config['logger'];
         } else {
@@ -58,7 +62,7 @@ class Talus implements LoggerAwareInterface
         if (!empty($config['swagger'])) {
             $this->swagger = new Swagger($config['swagger']);
         } else {
-            throw new \DomainException('missing swagger information');
+            throw new DomainException('missing swagger information');
         }
     }
 
@@ -79,7 +83,7 @@ class Talus implements LoggerAwareInterface
 
         try {
             $result = $this->callStack($request, $response);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $result = $this->errorHandler->__invoke($request, $response, $e);
         }
 
@@ -134,7 +138,7 @@ class Talus implements LoggerAwareInterface
             try {
                 $method = strtolower($request->getMethod());
                 $operation = $path->getOperation($method);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw $e;
             }
 
@@ -154,7 +158,7 @@ class Talus implements LoggerAwareInterface
             return $controller->$methodName($request, $response);
         }
 
-        throw new \Exception('Path not found');
+        throw new Exception('Path not found');
     }
 
     /**

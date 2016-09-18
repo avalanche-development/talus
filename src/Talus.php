@@ -6,8 +6,10 @@
 
 namespace AvalancheDevelopment\Talus;
 
-use gossi\swagger\Path as SwaggerPath;
-use gossi\swagger\Swagger;
+use DomainException;
+use Exception;
+use InvalidArgumentException;
+
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -28,10 +30,10 @@ class Talus implements LoggerAwareInterface
     /** @var ContainerInterface $container */
     protected $container;
 
-    /** @var Swagger $swagger */
+    /** @var array $swagger */
     protected $swagger;
 
-    /** @var \Closure $errorHandler */
+    /** @var callable $errorHandler */
     protected $errorHandler;
 
     /**
@@ -41,14 +43,14 @@ class Talus implements LoggerAwareInterface
     {
         if (!empty($config['container'])) {
             if (!($config['container'] instanceof ContainerInterface)) {
-                throw new \InvalidArgumentException('container must be instance of ContainerInterface');
+                throw new InvalidArgumentException('container must be instance of ContainerInterface');
             }
             $this->container = $config['container'];
         }
 
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
-                throw new \InvalidArgumentException('logger must be instance of LoggerInterface');
+                throw new InvalidArgumentException('logger must be instance of LoggerInterface');
             }
             $this->logger = $config['logger'];
         } else {
@@ -56,9 +58,9 @@ class Talus implements LoggerAwareInterface
         }
 
         if (!empty($config['swagger'])) {
-            $this->swagger = new Swagger($config['swagger']);
+            $this->swagger = $config['swagger'];
         } else {
-            throw new \DomainException('missing swagger information');
+            throw new DomainException('missing swagger information');
         }
     }
 
@@ -79,7 +81,7 @@ class Talus implements LoggerAwareInterface
 
         try {
             $result = $this->callStack($request, $response);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $result = $this->errorHandler->__invoke($request, $response, $e);
         }
 
@@ -118,14 +120,13 @@ class Talus implements LoggerAwareInterface
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
         if ($request->getUri()->getPath() == '/api-docs') {
-            $swaggerDoc = $this->swagger->toArray();
-            $swaggerDoc = json_encode($swaggerDoc);
+            $swaggerDoc = json_encode($this->swagger); // todo handle errors
             $response->getBody()->write($swaggerDoc);
             return $response;
         }
 
-        foreach ($this->swagger->getPaths() as $path) {
-            $matchResult = $this->matchPath($request, $path);
+        foreach ($this->swagger['paths'] as $route => $pathItem) {
+            $matchResult = $this->matchPath($request, $route, $pathItem);
             if ($matchResult === false) {
                 continue;
             }
@@ -133,8 +134,8 @@ class Talus implements LoggerAwareInterface
 
             try {
                 $method = strtolower($request->getMethod());
-                $operation = $path->getOperation($method);
-            } catch (\Exception $e) {
+                $operation = $pathItem[$method];
+            } catch (Exception $e) {
                 throw $e;
             }
 
@@ -143,8 +144,8 @@ class Talus implements LoggerAwareInterface
             // todo should verify that operationId exists
             try {
                 // todo this could be operation-level
-                $controllerName = $path->getExtensions()->get('swagger-router-controller');
-                $methodName = $operation->getOperationId();
+                $controllerName = $pathItem['x-swagger-router-controller'];
+                $methodName = $operation['operationId'];
             } catch (Exception $e) {
                 // todo handle straight functions
                 throw $e;
@@ -154,23 +155,24 @@ class Talus implements LoggerAwareInterface
             return $controller->$methodName($request, $response);
         }
 
-        throw new \Exception('Path not found');
+        throw new Exception('Path not found');
     }
 
     /**
      * @param RequestInterface $request
-     * @param SwaggerPath $swaggerPath
+     * @param string $route
+     * @param array $pathItem
      * @response boolean
      */
     // todo a better response
-    protected function matchPath(RequestInterface $request, SwaggerPath $swaggerPath)
+    protected function matchPath(RequestInterface $request, $route, array $pathItem)
     {
-        if ($request->getUri()->getPath() === $swaggerPath->getPath()) {
+        if ($request->getUri()->getPath() === $route) {
             return $request;
         }
 
         // todo what are acceptable path param values, anyways?
-        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $swaggerPath->getPath(), $pathMatches);
+        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $route, $pathMatches);
         if (!$isVariablePath) {
             return false;
         }
@@ -178,15 +180,15 @@ class Talus implements LoggerAwareInterface
         // loop da loop
         // todo feels weird that we pull operation out here and then do it again later
         $method = strtolower($request->getMethod());
-        $operation = $swaggerPath->getOperation($method);
+        $operation = $pathItem[$method]; // todo invalid operations?
         foreach ($pathMatches[1] as $pathParam) {
-            foreach ($operation->getParameters() as $parameter) {
-                if ($pathParam == $parameter->getName()) {
-                    if ($parameter->getType() == 'string') {
+            foreach ($operation['parameters'] as $parameter) {
+                if ($pathParam == $parameter['name']) {
+                    if ($parameter['type'] == 'string') {
                         $pathKey = str_replace(
                             '{' . $pathParam . '}',
                             '(?P<' . $pathParam . '>\w+)',
-                            $swaggerPath->getPath()
+                            $route
                         );
                         continue 2;
                     }

@@ -2,11 +2,9 @@
 
 namespace AvalancheDevelopment\Talus;
 
-use gossi\swagger\Swagger;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 use stdclass;
-use Swagger\Document as SwaggerDocument;
 
 class TalusTest extends PHPUnit_Framework_TestCase
 {
@@ -97,10 +95,11 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testConstructSetsSwagger()
     {
+        $swagger = ['swagger'];
+
         $talus = new Talus([
-            'swagger' => ['swagger'],
+            'swagger' => $swagger,
         ]);
-        $swagger = new Swagger(['swagger']);
 
         $this->assertAttributeEquals($swagger, 'swagger', $talus);
     }

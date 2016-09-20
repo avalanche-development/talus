@@ -246,7 +246,8 @@ class Talus implements LoggerAwareInterface
     protected function handleError($request, $response, $e)
     {
         if (!isset($this->errorHandler)) {
-            return $response->getBody()->write("Error: {$e->getMessage()}");
+            $response->getBody()->write("Error: {$e->getMessage()}");
+            return $response;
         }
 
         return $this->errorHandler->__invoke($request, $response, $e);

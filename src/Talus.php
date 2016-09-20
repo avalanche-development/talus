@@ -67,10 +67,10 @@ class Talus implements LoggerAwareInterface
     /**
      * @param callable $errorHandler
      */
-    public function setErrorHandler(callable $errorHandler)
+    public function setErrorHandler($errorHandler)
     {
         if (!is_callable($errorHandler)) {
-            throw new DomainException('error handler must be callable');
+            throw new InvalidArgumentException('error handler must be callable');
         }
 
         $this->errorHandler = $errorHandler;

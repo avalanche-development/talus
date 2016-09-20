@@ -115,6 +115,20 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame($errorHandler, 'errorHandler', $talus);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testSetErrorHandlerBailsOnBadHandler()
+    {
+        $errorHandler = false;
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+        $talus->setErrorHandler($errorHandler);
+    }
+
     public function testRun()
     {
         $this->markTestIncomplete('Talus::run() is not yet covered');

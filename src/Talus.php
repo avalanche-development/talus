@@ -82,7 +82,7 @@ class Talus implements LoggerAwareInterface
         try {
             $result = $this->callStack($request, $response);
         } catch (Exception $e) {
-            $result = $this->errorHandler->__invoke($request, $response, $e);
+            $result = $this->handleError($request, $response, $e);
         }
 
         $this->outputResponse($result);
@@ -231,5 +231,16 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param Exception $e
+     * @return ResponseInterface
+     */
+    protected function handleError($request, $response, $e)
+    {
+        $this->errorHandler->__invoke($request, $response, $e);
     }
 }

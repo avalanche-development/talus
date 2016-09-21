@@ -67,8 +67,12 @@ class Talus implements LoggerAwareInterface
     /**
      * @param callable $errorHandler
      */
-    public function setErrorHandler(callable $errorHandler)
+    public function setErrorHandler($errorHandler)
     {
+        if (!is_callable($errorHandler)) {
+            throw new InvalidArgumentException('error handler must be callable');
+        }
+
         $this->errorHandler = $errorHandler;
     }
 
@@ -82,7 +86,7 @@ class Talus implements LoggerAwareInterface
         try {
             $result = $this->callStack($request, $response);
         } catch (Exception $e) {
-            $result = $this->errorHandler->__invoke($request, $response, $e);
+            $result = $this->handleError($request, $response, $e);
         }
 
         $this->outputResponse($result);
@@ -132,12 +136,11 @@ class Talus implements LoggerAwareInterface
             }
             $request = $matchResult;
 
-            try {
-                $method = strtolower($request->getMethod());
-                $operation = $pathItem[$method];
-            } catch (Exception $e) {
-                throw $e;
+            $method = strtolower($request->getMethod());
+            if (!array_key_exists($method, $pathItem)) {
+                throw new Exception('Path not found');
             }
+            $operation = $pathItem[$method];
 
             $this->logger->debug('Talus: routing matched, dispatching now');
 
@@ -231,5 +234,21 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param Exception $e
+     * @return ResponseInterface
+     */
+    protected function handleError($request, $response, $e)
+    {
+        if (!isset($this->errorHandler)) {
+            $response->getBody()->write("Error: {$e->getMessage()}");
+            return $response;
+        }
+
+        return $this->errorHandler->__invoke($request, $response, $e);
     }
 }

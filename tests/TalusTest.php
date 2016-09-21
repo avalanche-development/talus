@@ -2,9 +2,14 @@
 
 namespace AvalancheDevelopment\Talus;
 
+use Exception;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 use stdclass;
+
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class TalusTest extends PHPUnit_Framework_TestCase
 {
@@ -113,6 +118,21 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $talus->setErrorHandler($errorHandler);
 
         $this->assertAttributeSame($errorHandler, 'errorHandler', $talus);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage error handler must be callable
+     */
+    public function testSetErrorHandlerBailsOnBadHandler()
+    {
+        $errorHandler = false;
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+        $talus->setErrorHandler($errorHandler);
     }
 
     public function testRun()
@@ -296,5 +316,68 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $response = $reflectedResponse->invoke($talus);
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
+    }
+
+    public function testHandleErrorDefault()
+    {
+        $exception = new Exception('test error');
+
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->expects($this->once())
+            ->method('write')
+            ->with('Error: test error');
+
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())
+            ->method('getBody')
+            ->willReturn($stream);
+
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedHandleError = $reflectedTalus->getMethod('handleError');
+        $reflectedHandleError->setAccessible(true);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+
+        $result = $reflectedHandleError->invokeArgs($talus, [ $request, $response, $exception ]);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
+    }
+
+    public function testHandleErrorCustom()
+    {
+        $exception = new Exception('test error');
+        $errorHandler = function ($req, $res, $e) {
+            $res->getBody()->write("SOME ERROR: {$e->getMessage()}");
+            return $res;
+        };
+
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->expects($this->once())
+            ->method('write')
+            ->with('SOME ERROR: test error');
+
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())
+            ->method('getBody')
+            ->willReturn($stream);
+
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedErrorHandler = $reflectedTalus->getProperty('errorHandler');
+        $reflectedErrorHandler->setAccessible(true);
+        $reflectedHandleError = $reflectedTalus->getMethod('handleError');
+        $reflectedHandleError->setAccessible(true);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+
+        $reflectedErrorHandler->setValue($talus, $errorHandler);
+        $result = $reflectedHandleError->invokeArgs($talus, [ $request, $response, $exception ]);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
     }
 }

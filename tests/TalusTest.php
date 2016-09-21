@@ -2,9 +2,14 @@
 
 namespace AvalancheDevelopment\Talus;
 
+use Exception;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 use stdclass;
+
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class TalusTest extends PHPUnit_Framework_TestCase
 {
@@ -310,5 +315,33 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $response = $reflectedResponse->invoke($talus);
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
+    }
+
+    public function testHandleErrorDefault()
+    {
+        $exception = new Exception('test error');
+
+        $stream = $this->createMock(StreamInterface::class);
+        $stream->expects($this->once())
+            ->method('write')
+            ->with('Error: test error');
+
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->expects($this->once())
+            ->method('getBody')
+            ->willReturn($stream);
+
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedHandleError = $reflectedTalus->getMethod('handleError');
+        $reflectedHandleError->setAccessible(true);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+
+        $result = $reflectedHandleError->invokeArgs($talus, [ $request, $response, $exception ]);
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
     }
 }

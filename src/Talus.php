@@ -136,12 +136,11 @@ class Talus implements LoggerAwareInterface
             }
             $request = $matchResult;
 
-            try {
-                $method = strtolower($request->getMethod());
-                $operation = $pathItem[$method];
-            } catch (Exception $e) {
-                throw $e;
+            $method = strtolower($request->getMethod());
+            if (!array_key_exists($method, $pathItem)) {
+                throw new Exception('Path not found');
             }
+            $operation = $pathItem[$method];
 
             $this->logger->debug('Talus: routing matched, dispatching now');
 

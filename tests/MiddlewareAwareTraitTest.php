@@ -11,9 +11,9 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testAddMiddleware()
     {
-        $middleware = function ($req, $res, $next) {};
+        $middleware = function () {};
         $stub = new MiddlewareAwareStub();
-        $decoratedMiddleware = function ($req, $res) use ($middleware, $stub) {};
+        $decoratedMiddleware = function () {};
         $stackSize = $stub->addMiddleware($middleware);
 
         $this->assertInternalType('integer', $stackSize);
@@ -31,7 +31,7 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testAddMiddlewareSeedsEmptyStack()
     {
-        $middleware = function ($req, $res, $next) {};
+        $middleware = function () {};
         $stub = new MiddlewareAwareStub();
         $stub->addMiddleware($middleware);
 
@@ -40,7 +40,7 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testAddMiddlewareDoesNotRepeatSeed()
     {
-        $middleware = function ($req, $res, $next) {};
+        $middleware = function () {};
         $stub = new MiddlewareAwareStub();
 
         $reflectedStub = new ReflectionClass($stub);
@@ -55,9 +55,9 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testDecorateMiddleware()
     {
-        $middleware = function ($req, $res, $next) {};
+        $middleware = function () {};
         $stub = new MiddlewareAwareStub();
-        $decoratedMiddleware = function ($req, $res) use ($middleware, $stub) {};
+        $decoratedMiddleware = function () {};
 
         $reflectedStub = new ReflectionClass($stub);
         $reflectedDecorator = $reflectedStub->getMethod('decorateMiddleware');
@@ -74,7 +74,7 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testDecoratedMiddlewareReturnsResponse()
     {
-        $middleware = function ($req, $res, $next) { return $res; };
+        $middleware = function ($req, $res) { return $res; };
         $stub = new MiddlewareAwareStub();
         $request = $this->createMock('Psr\Http\Message\RequestInterface');
         $response = $this->createMock('Psr\Http\Message\ResponseInterface');
@@ -173,7 +173,7 @@ class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 
     public function testCallStackSeedsEmptyStack()
     {
-        $middleware = function ($req, $res, $next) {};
+        $middleware = function () {};
         $stub = new MiddlewareAwareStub();
         $request = $this->createMock('Psr\Http\Message\RequestInterface');
         $response = $this->createMock('Psr\Http\Message\ResponseInterface');

@@ -48,20 +48,18 @@ class Talus implements LoggerAwareInterface
             $this->container = $config['container'];
         }
 
+        $this->logger = new NullLogger();
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
                 throw new InvalidArgumentException('logger must be instance of LoggerInterface');
             }
             $this->logger = $config['logger'];
-        } else {
-            $this->logger = new NullLogger();
         }
 
-        if (!empty($config['swagger'])) {
-            $this->swagger = $config['swagger'];
-        } else {
+        if (empty($config['swagger'])) {
             throw new DomainException('missing swagger information');
         }
+        $this->swagger = $config['swagger'];
     }
 
     /**
@@ -103,7 +101,7 @@ class Talus implements LoggerAwareInterface
             $response->getStatusCode()
         );
 
-        if ($response->getHeaders() !== NULL) {
+        if ($response->getHeaders() !== null) {
             foreach ($response->getHeaders() as $header => $values) {
                 header(
                     sprintf('%s: %s', $header, implode(', ', $values)),
@@ -239,16 +237,16 @@ class Talus implements LoggerAwareInterface
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @param Exception $e
+     * @param Exception $exception
      * @return ResponseInterface
      */
-    protected function handleError($request, $response, $e)
+    protected function handleError($request, $response, $exception)
     {
         if (!isset($this->errorHandler)) {
-            $response->getBody()->write("Error: {$e->getMessage()}");
+            $response->getBody()->write("Error: {$exception->getMessage()}");
             return $response;
         }
 
-        return $this->errorHandler->__invoke($request, $response, $e);
+        return $this->errorHandler->__invoke($request, $response, $exception);
     }
 }

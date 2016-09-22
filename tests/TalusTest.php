@@ -50,7 +50,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
     public function testConstructValidatesContainer()
     {
         $container = new stdclass();
-        $talus = new Talus([
+        new Talus([
             'container' => $container,
             'swagger' => ['swagger'],
         ]);
@@ -83,7 +83,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
     public function testConstructValidatesLogger()
     {
         $logger = new stdclass();
-        $talus = new Talus([
+        new Talus([
             'logger' => $logger,
             'swagger' => ['swagger'],
         ]);
@@ -95,7 +95,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
      */
     public function testConstructRequiresSwagger()
     {
-        $talus = new Talus([]);
+        new Talus([]);
     }
 
     public function testConstructSetsSwagger()
@@ -111,7 +111,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testSetErrorHandler()
     {
-        $errorHandler = function ($req, $res, $e) {};
+        $errorHandler = function () {};
         $talus = new Talus([
             'swagger' => ['swagger'],
         ]);
@@ -349,8 +349,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
     public function testHandleErrorCustom()
     {
         $exception = new Exception('test error');
-        $errorHandler = function ($req, $res, $e) {
-            $res->getBody()->write("SOME ERROR: {$e->getMessage()}");
+        $errorHandler = function ($req, $res, $exception) {
+            $res->getBody()->write("SOME ERROR: {$exception->getMessage()}");
             return $res;
         };
 
@@ -366,8 +366,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->willReturn($stream);
 
         $reflectedTalus = new ReflectionClass(Talus::class);
-        $reflectedErrorHandler = $reflectedTalus->getProperty('errorHandler');
-        $reflectedErrorHandler->setAccessible(true);
+        $reflectedHandler = $reflectedTalus->getProperty('errorHandler');
+        $reflectedHandler->setAccessible(true);
         $reflectedHandleError = $reflectedTalus->getMethod('handleError');
         $reflectedHandleError->setAccessible(true);
 
@@ -376,7 +376,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->setMethods()
             ->getMock();
 
-        $reflectedErrorHandler->setValue($talus, $errorHandler);
+        $reflectedHandler->setValue($talus, $errorHandler);
         $result = $reflectedHandleError->invokeArgs($talus, [ $request, $response, $exception ]);
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
     }

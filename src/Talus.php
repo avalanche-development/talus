@@ -39,6 +39,7 @@ class Talus implements LoggerAwareInterface
     /**
      * @param array $config
      */
+    // todo do we really need an array here
     public function __construct(array $config)
     {
         if (!empty($config['container'])) {
@@ -49,6 +50,7 @@ class Talus implements LoggerAwareInterface
         }
 
         $this->logger = new NullLogger();
+        // todo we probably shouldn't allow passing in logger as config key
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
                 throw new InvalidArgumentException('logger must be instance of LoggerInterface');
@@ -80,6 +82,10 @@ class Talus implements LoggerAwareInterface
         $response = $this->getResponse();
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
+
+        $swaggerRouter = new Router($this->swagger);
+        $swaggerRouter->setLogger($this->logger);
+        $this->addMiddleware($swaggerRouter);
 
         try {
             $result = $this->callStack($request, $response);
@@ -121,101 +127,24 @@ class Talus implements LoggerAwareInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
+        // todo this belongs in the swagger middleware
         if ($request->getUri()->getPath() == '/api-docs') {
             $swaggerDoc = json_encode($this->swagger); // todo handle errors
             $response->getBody()->write($swaggerDoc);
             return $response;
         }
 
-        foreach ($this->swagger['paths'] as $route => $pathItem) {
-            $matchResult = $this->matchPath($request, $route, $pathItem);
-            if ($matchResult === false) {
-                continue;
-            }
-            $request = $matchResult;
-
-            $method = strtolower($request->getMethod());
-            if (!array_key_exists($method, $pathItem)) {
-                throw new Exception('Path not found');
-            }
-            $operation = $pathItem[$method];
-
-            $this->logger->debug('Talus: routing matched, dispatching now');
-
-            // todo should verify that operationId exists
-            try {
-                // todo this could be operation-level
-                $controllerName = $pathItem['x-swagger-router-controller'];
-                $methodName = $operation['operationId'];
-            } catch (Exception $e) {
-                // todo handle straight functions
-                throw $e;
-            }
-
-            $controller = new $controllerName($this->container);
-            return $controller->$methodName($request, $response);
+        try {
+            // todo this could be operation-level
+            $controllerName = $request->getAttribute('swagger')['pathItem']['x-swagger-router-controller'];
+            $methodName = $request->getAttribute('swagger')['operation']['operationId'];
+        } catch (Exception $e) {
+            // todo handle straight functions too
+            throw $e;
         }
 
-        throw new Exception('Path not found');
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @param string $route
-     * @param array $pathItem
-     * @response boolean
-     */
-    // todo a better response
-    protected function matchPath(RequestInterface $request, $route, array $pathItem)
-    {
-        if ($request->getUri()->getPath() === $route) {
-            return $request;
-        }
-
-        // todo what are acceptable path param values, anyways?
-        $isVariablePath = preg_match_all('/{([a-z_]+)}/', $route, $pathMatches);
-        if (!$isVariablePath) {
-            return false;
-        }
-
-        // loop da loop
-        // todo feels weird that we pull operation out here and then do it again later
-        $method = strtolower($request->getMethod());
-        $operation = $pathItem[$method]; // todo invalid operations?
-        foreach ($pathMatches[1] as $pathParam) {
-            foreach ($operation['parameters'] as $parameter) {
-                if ($pathParam == $parameter['name']) {
-                    if ($parameter['type'] == 'string') {
-                        $pathKey = str_replace(
-                            '{' . $pathParam . '}',
-                            '(?P<' . $pathParam . '>\w+)',
-                            $route
-                        );
-                        continue 2;
-                    }
-                }
-            }
-            return false;
-        }
-
-        $matchedVariablePath = preg_match(
-            '@' . $pathKey . '@',
-            $request->getUri()->getPath(),
-            $pathMatches
-        );
-        if (!$matchedVariablePath) {
-            return false;
-        }
-
-        $pathMatches = array_filter($pathMatches, function ($key) {
-            return !is_numeric($key);
-        }, ARRAY_FILTER_USE_KEY);
-
-        foreach ($pathMatches as $key => $value) {
-            $request = $request->withAttribute($key, $value);
-        }
-
-        return $request;
+        $controller = new $controllerName($this->container);
+        return $controller->$methodName($request, $response);
     }
 
     /**
@@ -243,6 +172,7 @@ class Talus implements LoggerAwareInterface
     protected function handleError($request, $response, $exception)
     {
         if (!isset($this->errorHandler)) {
+            $response->withStatus(500);
             $response->getBody()->write("Error: {$exception->getMessage()}");
             return $response;
         }

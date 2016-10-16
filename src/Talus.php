@@ -10,6 +10,7 @@ use DomainException;
 use Exception;
 use InvalidArgumentException;
 
+use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -136,7 +137,7 @@ class Talus implements LoggerAwareInterface
 
         try {
             // todo this could be operation-level
-            $controllerName = $request->getAttribute('swagger')['pathItem']['x-swagger-router-controller'];
+            $controllerName = $request->getAttribute('swagger')['path']['x-swagger-router-controller'];
             $methodName = $request->getAttribute('swagger')['operation']['operationId'];
         } catch (Exception $e) {
             // todo handle straight functions too

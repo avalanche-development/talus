@@ -4,17 +4,22 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "89e9b17aa1ddb271a2a9922a00c1ed08",
-    "content-hash": "9cb0413bf7aaa8788c6298c0a21c73cf",
+    "hash": "6a55a7e069631a60251efa00f75b784b",
+    "content-hash": "19fb44ca157b664fd3937114f4a6b557",
     "packages": [
         {
             "name": "avalanche-development/swagger-router-middleware",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
+                "reference": "74d873f52c4736fc1e680f1528c0f4e044680fab"
+            },
             "dist": {
-                "type": "path",
-                "url": "../swagger-router-middleware",
+                "type": "zip",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/74d873f52c4736fc1e680f1528c0f4e044680fab",
                 "reference": "74d873f52c4736fc1e680f1528c0f4e044680fab",
-                "shasum": null
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.6.0",
@@ -39,7 +44,12 @@
                     "name": "jacobemerick",
                     "email": "jpemeric@gmail.com"
                 }
-            ]
+            ],
+            "support": {
+                "source": "https://github.com/avalanche-development/swagger-router-middleware/tree/master",
+                "issues": "https://github.com/avalanche-development/swagger-router-middleware/issues"
+            },
+            "time": "2016-10-15 14:43:41"
         },
         {
             "name": "container-interop/container-interop",

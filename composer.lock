@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "74d873f52c4736fc1e680f1528c0f4e044680fab"
+                "reference": "b4ae3ee5d5c7e7e18b4772423b7dfaff51039d36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/74d873f52c4736fc1e680f1528c0f4e044680fab",
-                "reference": "74d873f52c4736fc1e680f1528c0f4e044680fab",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/b4ae3ee5d5c7e7e18b4772423b7dfaff51039d36",
+                "reference": "b4ae3ee5d5c7e7e18b4772423b7dfaff51039d36",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 "source": "https://github.com/avalanche-development/swagger-router-middleware/tree/master",
                 "issues": "https://github.com/avalanche-development/swagger-router-middleware/issues"
             },
-            "time": "2016-10-15 14:43:41"
+            "time": "2016-10-16 21:19:39"
         },
         {
             "name": "container-interop/container-interop",

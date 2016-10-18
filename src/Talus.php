@@ -128,24 +128,19 @@ class Talus implements LoggerAwareInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
-        // todo this belongs in the swagger middleware
-        if ($request->getUri()->getPath() == '/api-docs') {
-            $swaggerDoc = json_encode($this->swagger); // todo handle errors
-            $response->getBody()->write($swaggerDoc);
-            return $response;
-        }
+        // todo this could be operation-level
+        $controllerName = $request->getAttribute('swagger')['path']['x-swagger-router-controller'];
+        $methodName = $request->getAttribute('swagger')['operation']['operationId'];
 
         try {
-            // todo this could be operation-level
-            $controllerName = $request->getAttribute('swagger')['path']['x-swagger-router-controller'];
-            $methodName = $request->getAttribute('swagger')['operation']['operationId'];
+            // todo this should be container-controlled
+            $controller = new $controllerName($this->container);
+            return $controller->$methodName($request, $response);
         } catch (Exception $e) {
-            // todo handle straight functions too
+            // todo handle straight errors too
             throw $e;
         }
 
-        $controller = new $controllerName($this->container);
-        return $controller->$methodName($request, $response);
     }
 
     /**

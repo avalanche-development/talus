@@ -10,6 +10,7 @@ use DomainException;
 use Exception;
 use InvalidArgumentException;
 
+use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
@@ -165,12 +166,11 @@ class Talus implements LoggerAwareInterface
      * @param Exception $exception
      * @return ResponseInterface
      */
-    protected function handleError($request, $response, $exception)
+    protected function handleError(RequestInterface $request, ResponseInterface $response, Exception $exception)
     {
         if (!isset($this->errorHandler)) {
-            $response->withStatus(500);
-            $response->getBody()->write("Error: {$exception->getMessage()}");
-            return $response;
+            $errorHandler = new ErrorHandler;
+            return $errorHandler->__invoke($request, $response, $exception);
         }
 
         return $this->errorHandler->__invoke($request, $response, $exception);

@@ -51,7 +51,7 @@ class Talus implements LoggerAwareInterface
             $this->container = $config['container'];
         }
 
-        $this->logger = new NullLogger();
+        $this->logger = new NullLogger;
         // todo we probably shouldn't allow passing in logger as config key
         if (!empty($config['logger'])) {
             if (!($config['logger'] instanceof LoggerInterface)) {
@@ -59,6 +59,8 @@ class Talus implements LoggerAwareInterface
             }
             $this->logger = $config['logger'];
         }
+
+        $this->errorHandler = new ErrorHandler;
 
         if (empty($config['swagger'])) {
             throw new DomainException('missing swagger information');
@@ -91,8 +93,8 @@ class Talus implements LoggerAwareInterface
 
         try {
             $result = $this->callStack($request, $response);
-        } catch (Exception $e) {
-            $result = $this->handleError($request, $response, $e);
+        } catch (Exception $exception) {
+            $this->errorHandler->__invoke($request, $response, $exception);
         }
 
         $this->outputResponse($result);
@@ -133,15 +135,9 @@ class Talus implements LoggerAwareInterface
         $controllerName = $request->getAttribute('swagger')['path']['x-swagger-router-controller'];
         $methodName = $request->getAttribute('swagger')['operation']['operationId'];
 
-        try {
-            // todo this should be container-controlled
-            $controller = new $controllerName($this->container);
-            return $controller->$methodName($request, $response);
-        } catch (Exception $e) {
-            // todo handle straight errors too
-            throw $e;
-        }
-
+        // todo this should be container-controlled
+        $controller = new $controllerName($this->container);
+        return $controller->$methodName($request, $response);
     }
 
     /**
@@ -158,21 +154,5 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param Exception $exception
-     * @return ResponseInterface
-     */
-    protected function handleError(RequestInterface $request, ResponseInterface $response, Exception $exception)
-    {
-        if (!isset($this->errorHandler)) {
-            $errorHandler = new ErrorHandler;
-            return $errorHandler->__invoke($request, $response, $exception);
-        }
-
-        return $this->errorHandler->__invoke($request, $response, $exception);
     }
 }

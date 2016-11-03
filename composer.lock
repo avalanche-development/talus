@@ -4,24 +4,105 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "451894146e8c4a387a1c870a286d2215",
-    "content-hash": "1ac15696ff981dd97d2d9b6fa77ea3a3",
+    "hash": "f2338d83703df5ca446c42a3ffca9dbd",
+    "content-hash": "4b351832350fe1e64083ea16d23c9ff2",
     "packages": [
         {
-            "name": "avalanche-development/swagger-router-middleware",
-            "version": "0.2.0",
+            "name": "avalanche-development/crash-pad",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "29c12ddc9ad753241245bebb50c0f022ebd06f6a"
+                "url": "https://github.com/avalanche-development/crash-pad.git",
+                "reference": "746568a40bfef0ae54630d49607bb5e0cc1ee7ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/29c12ddc9ad753241245bebb50c0f022ebd06f6a",
-                "reference": "29c12ddc9ad753241245bebb50c0f022ebd06f6a",
+                "url": "https://api.github.com/repos/avalanche-development/crash-pad/zipball/746568a40bfef0ae54630d49607bb5e0cc1ee7ea",
+                "reference": "746568a40bfef0ae54630d49607bb5e0cc1ee7ea",
                 "shasum": ""
             },
             "require": {
+                "avalanche-development/peel": "^0.1",
+                "php": ">=5.6.0",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "^0.3.2",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AvalancheDevelopment\\CrashPad\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "jacobemerick",
+                    "email": "jpemeric@gmail.com"
+                }
+            ],
+            "time": "2016-11-02 11:41:40"
+        },
+        {
+            "name": "avalanche-development/peel",
+            "version": "0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/avalanche-development/peel.git",
+                "reference": "69868da98b121c29878c9fb5bfd8e8ed9bb1ca8f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/avalanche-development/peel/zipball/69868da98b121c29878c9fb5bfd8e8ed9bb1ca8f",
+                "reference": "69868da98b121c29878c9fb5bfd8e8ed9bb1ca8f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "^0.3.2",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AvalancheDevelopment\\Peel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "jacobemerick",
+                    "email": "jpemeric@gmail.com"
+                }
+            ],
+            "time": "2016-11-02 02:38:15"
+        },
+        {
+            "name": "avalanche-development/swagger-router-middleware",
+            "version": "0.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
+                "reference": "b8c25f5ddc7804b46992cc33795939aa39825909"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/b8c25f5ddc7804b46992cc33795939aa39825909",
+                "reference": "b8c25f5ddc7804b46992cc33795939aa39825909",
+                "shasum": ""
+            },
+            "require": {
+                "avalanche-development/peel": "^0.1.0",
                 "php": ">=5.6.0",
                 "psr/http-message": "^1.0",
                 "psr/log": "^1.0"
@@ -46,7 +127,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-10-26 12:01:04"
+            "time": "2016-11-03 12:49:39"
         },
         {
             "name": "container-interop/container-interop",
@@ -434,16 +515,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.5.4",
+            "version": "1.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "ea74994a3dc7f8d2f65a06009348f2d63c81e61f"
+                "reference": "399c1f9781e222f6eb6cc238796f5200d1b7f108"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/ea74994a3dc7f8d2f65a06009348f2d63c81e61f",
-                "reference": "ea74994a3dc7f8d2f65a06009348f2d63c81e61f",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/399c1f9781e222f6eb6cc238796f5200d1b7f108",
+                "reference": "399c1f9781e222f6eb6cc238796f5200d1b7f108",
                 "shasum": ""
             },
             "require": {
@@ -472,7 +553,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2016-09-16 13:37:59"
+            "time": "2016-10-31 17:19:45"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -684,16 +765,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "4.0.1",
+            "version": "4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "5f3f7e736d6319d5f1fc402aff8b026da26709a3"
+                "reference": "6cba06ff75a1a63a71033e1a01b89056f3af1e8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/5f3f7e736d6319d5f1fc402aff8b026da26709a3",
-                "reference": "5f3f7e736d6319d5f1fc402aff8b026da26709a3",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/6cba06ff75a1a63a71033e1a01b89056f3af1e8d",
+                "reference": "6cba06ff75a1a63a71033e1a01b89056f3af1e8d",
                 "shasum": ""
             },
             "require": {
@@ -743,7 +824,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-07-26 14:39:29"
+            "time": "2016-11-01 05:06:24"
         },
         {
             "name": "phpunit/php-file-iterator",

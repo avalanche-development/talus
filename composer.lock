@@ -89,16 +89,16 @@
         },
         {
             "name": "avalanche-development/swagger-router-middleware",
-            "version": "0.3.0",
+            "version": "0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "ba419a884bc187ef2609f8d95bbb5573c171e7f7"
+                "reference": "b8c25f5ddc7804b46992cc33795939aa39825909"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/ba419a884bc187ef2609f8d95bbb5573c171e7f7",
-                "reference": "ba419a884bc187ef2609f8d95bbb5573c171e7f7",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/b8c25f5ddc7804b46992cc33795939aa39825909",
+                "reference": "b8c25f5ddc7804b46992cc33795939aa39825909",
                 "shasum": ""
             },
             "require": {
@@ -127,7 +127,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-01 20:49:26"
+            "time": "2016-11-03 12:49:39"
         },
         {
             "name": "container-interop/container-interop",

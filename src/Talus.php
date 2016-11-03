@@ -94,7 +94,7 @@ class Talus implements LoggerAwareInterface
         try {
             $result = $this->callStack($request, $response);
         } catch (Exception $exception) {
-            $this->errorHandler->__invoke($request, $response, $exception);
+            $result = $this->errorHandler->__invoke($request, $response, $exception);
         }
 
         $this->outputResponse($result);

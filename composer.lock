@@ -4,25 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f2338d83703df5ca446c42a3ffca9dbd",
-    "content-hash": "4b351832350fe1e64083ea16d23c9ff2",
+    "hash": "33cbc71a6a2ef447f60ad3cdb7e18a85",
+    "content-hash": "f78c57eaf3df983f81fd02297619b989",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
-            "version": "0.1.1",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/crash-pad.git",
-                "reference": "746568a40bfef0ae54630d49607bb5e0cc1ee7ea"
+                "reference": "973ff76556cff4b0328db844c65be9342617d080"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/crash-pad/zipball/746568a40bfef0ae54630d49607bb5e0cc1ee7ea",
-                "reference": "746568a40bfef0ae54630d49607bb5e0cc1ee7ea",
+                "url": "https://api.github.com/repos/avalanche-development/crash-pad/zipball/973ff76556cff4b0328db844c65be9342617d080",
+                "reference": "973ff76556cff4b0328db844c65be9342617d080",
                 "shasum": ""
             },
             "require": {
-                "avalanche-development/peel": "^0.1",
+                "avalanche-development/peel": "^0.2",
                 "php": ">=5.6.0",
                 "psr/http-message": "^1.0"
             },
@@ -46,20 +46,20 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-02 11:41:40"
+            "time": "2016-11-07 00:19:27"
         },
         {
             "name": "avalanche-development/peel",
-            "version": "0.1.1",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/peel.git",
-                "reference": "69868da98b121c29878c9fb5bfd8e8ed9bb1ca8f"
+                "reference": "4c8357f694b956456390cbbdfc22ca7b3ab26748"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/peel/zipball/69868da98b121c29878c9fb5bfd8e8ed9bb1ca8f",
-                "reference": "69868da98b121c29878c9fb5bfd8e8ed9bb1ca8f",
+                "url": "https://api.github.com/repos/avalanche-development/peel/zipball/4c8357f694b956456390cbbdfc22ca7b3ab26748",
+                "reference": "4c8357f694b956456390cbbdfc22ca7b3ab26748",
                 "shasum": ""
             },
             "require": {
@@ -85,24 +85,24 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-02 02:38:15"
+            "time": "2016-11-06 00:12:10"
         },
         {
             "name": "avalanche-development/swagger-router-middleware",
-            "version": "0.3.2",
+            "version": "0.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "b8c25f5ddc7804b46992cc33795939aa39825909"
+                "reference": "85f18a98a4838bb3ef261de305aeead100d0f87a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/b8c25f5ddc7804b46992cc33795939aa39825909",
-                "reference": "b8c25f5ddc7804b46992cc33795939aa39825909",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/85f18a98a4838bb3ef261de305aeead100d0f87a",
+                "reference": "85f18a98a4838bb3ef261de305aeead100d0f87a",
                 "shasum": ""
             },
             "require": {
-                "avalanche-development/peel": "^0.1.0",
+                "avalanche-development/peel": "^0.2",
                 "php": ">=5.6.0",
                 "psr/http-message": "^1.0",
                 "psr/log": "^1.0"
@@ -127,7 +127,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-03 12:49:39"
+            "time": "2016-11-09 03:08:24"
         },
         {
             "name": "container-interop/container-interop",

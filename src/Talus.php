@@ -39,33 +39,16 @@ class Talus implements LoggerAwareInterface
     protected $errorHandler;
 
     /**
-     * @param array $config
+     * @param array $swagger
+     * @param ContainerInterface $container
      */
-    // todo do we really need an array here
-    public function __construct(array $config)
+    public function __construct(array $swagger, ContainerInterface $container)
     {
-        if (!empty($config['container'])) {
-            if (!($config['container'] instanceof ContainerInterface)) {
-                throw new InvalidArgumentException('container must be instance of ContainerInterface');
-            }
-            $this->container = $config['container'];
-        }
+        $this->swagger = $swagger;
+        $this->container = $container;
 
         $this->logger = new NullLogger;
-        // todo we probably shouldn't allow passing in logger as config key
-        if (!empty($config['logger'])) {
-            if (!($config['logger'] instanceof LoggerInterface)) {
-                throw new InvalidArgumentException('logger must be instance of LoggerInterface');
-            }
-            $this->logger = $config['logger'];
-        }
-
         $this->errorHandler = new ErrorHandler;
-
-        if (empty($config['swagger'])) {
-            throw new DomainException('missing swagger information');
-        }
-        $this->swagger = $config['swagger'];
     }
 
     /**

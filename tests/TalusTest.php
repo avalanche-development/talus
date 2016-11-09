@@ -8,6 +8,7 @@ use ReflectionClass;
 use stdclass;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
+use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -17,104 +18,55 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testIsInstanceOfTalus()
     {
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $container = $this->createMock(ContainerInterface::class);
+
+        $talus = new Talus([], $container);
 
         $this->assertInstanceOf('AvalancheDevelopment\Talus\Talus', $talus);
     }
 
     public function testTalusImplementsLoggerInterface()
     {
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $container = $this->createMock(ContainerInterface::class);
+
+        $talus = new Talus([], $container);
 
         $this->assertInstanceOf('Psr\Log\LoggerAwareInterface', $talus);
     }
 
     public function testConstructSetsContainer()
     {
-        $container = $this->createMock('Interop\Container\ContainerInterface');
-        $talus = new Talus([
-            'container' => $container,
-            'swagger' => ['swagger'],
-        ]);
+        $container = $this->createMock(ContainerInterface::class);
+
+        $talus = new Talus([], $container);
 
         $this->assertAttributeSame($container, 'container', $talus);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage container must be instance of ContainerInterface
-     */
-    public function testConstructValidatesContainer()
-    {
-        $container = new stdclass();
-        new Talus([
-            'container' => $container,
-            'swagger' => ['swagger'],
-        ]);
-    }
-
     public function testConstructSetsNullLogger()
     {
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $container = $this->createMock(ContainerInterface::class);
+
+        $talus = new Talus([], $container);
 
         $this->assertAttributeInstanceOf('Psr\Log\NullLogger', 'logger', $talus);
     }
 
-    public function testConstructSetsLogger()
-    {
-        $logger = $this->createMock('Psr\Log\LoggerInterface');
-        $talus = new Talus([
-            'logger' => $logger,
-            'swagger' => ['swagger'],
-        ]);
-
-        $this->assertAttributeSame($logger, 'logger', $talus);
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage logger must be instance of LoggerInterface
-     */
-    public function testConstructValidatesLogger()
-    {
-        $logger = new stdclass();
-        new Talus([
-            'logger' => $logger,
-            'swagger' => ['swagger'],
-        ]);
-    }
-
     public function testConstructSetsErrorHandler()
     {
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $container = $this->createMock(ContainerInterface::class);
+
+        $talus = new Talus([], $container);
 
         $this->assertAttributeInstanceOf(ErrorHandler::class, 'errorHandler', $talus);
     }
 
-    /**
-     * @expectedException DomainException
-     * @expectedExceptionMessage missing swagger information
-     */
-    public function testConstructRequiresSwagger()
-    {
-        new Talus([]);
-    }
-
     public function testConstructSetsSwagger()
     {
+        $container = $this->createMock(ContainerInterface::class);
         $swagger = ['swagger'];
 
-        $talus = new Talus([
-            'swagger' => $swagger,
-        ]);
+        $talus = new Talus($swagger, $container);
 
         $this->assertAttributeEquals($swagger, 'swagger', $talus);
     }
@@ -122,9 +74,11 @@ class TalusTest extends PHPUnit_Framework_TestCase
     public function testSetErrorHandler()
     {
         $errorHandler = function () {};
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
         $talus->setErrorHandler($errorHandler);
 
         $this->assertAttributeSame($errorHandler, 'errorHandler', $talus);
@@ -173,9 +127,10 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $this->expectOutputString($expectedHeaders);
 
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
 
@@ -213,9 +168,10 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $this->expectOutputString($expectedHeaders);
 
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
 
@@ -252,9 +208,10 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $this->expectOutputString($expectedHeaders);
 
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
 
@@ -284,9 +241,10 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $this->expectOutputString($expectedOutput);
 
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
 
@@ -295,20 +253,16 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $this->markTestIncomplete('Talus::__invoke() is not yet covered');
     }
 
-    public function testMatchPath()
-    {
-        $this->markTestIncomplete('Talus::matchPath() is not yet covered');
-    }
-
     public function testGetRequest()
     {
         $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
         $reflectedRequest = $reflectedTalus->getMethod('getRequest');
         $reflectedRequest->setAccessible(true);
 
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
         $request = $reflectedRequest->invoke($talus);
 
         $this->assertInstanceOf('Psr\Http\Message\RequestInterface', $request);
@@ -320,9 +274,10 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedResponse = $reflectedTalus->getMethod('getResponse');
         $reflectedResponse->setAccessible(true);
 
-        $talus = new Talus([
-            'swagger' => ['swagger'],
-        ]);
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
         $response = $reflectedResponse->invoke($talus);
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);

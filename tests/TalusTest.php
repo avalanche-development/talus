@@ -86,7 +86,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     /**
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage error handler must be callable
+     * @expectedExceptionMessage Error handler must be callable
      */
     public function testSetErrorHandlerBailsOnBadHandler()
     {

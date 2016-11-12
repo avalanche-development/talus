@@ -8,11 +8,14 @@ use ReflectionClass;
 use stdclass;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
+use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class TalusTest extends PHPUnit_Framework_TestCase
@@ -75,12 +78,38 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testAddController()
     {
-        $this->markTestIncomplete('Talus::addController is not yet covered');
+        $operationId = 'getThings';
+        $controller = function () {};
+
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedControllerList = $reflectedTalus->getProperty('controllerList');
+        $reflectedControllerList->setAccessible(true);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+        $talus->addController($operationId, $controller);
+
+        $controllerList = $reflectedControllerList->getValue($talus);
+
+        $this->assertArrayHasKey('getThings', $controllerList);
+        $this->assertSame($controller, $controllerList['getThings']);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Controller must be callable
+     */
     public function testAddControllerBailsOnBadController()
     {
-        $this->markTestIncomplete('Talus::addController is not yet covered');
+        $controller = false;
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+        $talus->addController('', $controller);
     }
 
     public function testSetErrorHandler()
@@ -113,27 +142,253 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testRunLogsIncomingRun()
     {
-        $this->markTestIncomplete('Talus::run() is not yet covered');
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+
+        $mockRequest = $this->createMock(RequestInterface::class);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockLogger->expects($this->once())
+            ->method('debug')
+            ->with('Talus: walking through swagger doc looking for dispatch');
+
+        $mockRouter = $this->createMock(Router::class);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getRequest',
+                'getResponse',
+                'getRouter',
+                'addMiddleware',
+                'callStack',
+                'outputResponse',
+            ])
+            ->getMock();
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+
+        $talus->expects($this->once())
+            ->method('getRequest')
+            ->willReturn($mockRequest);
+
+        $talus->expects($this->once())
+            ->method('getResponse')
+            ->willReturn($mockResponse);
+
+        $talus->expects($this->once())
+            ->method('getRouter')
+            ->willReturn($mockRouter);
+
+        $talus->expects($this->once())
+            ->method('callStack')
+            ->willReturn($mockResponse);
+
+        $talus->run();
     }
 
     public function testRunSetsUpRouterMiddleware()
     {
-        $this->markTestIncomplete('Talus::run() is not yet covered');
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+
+        $mockRequest = $this->createMock(RequestInterface::class);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockLogger = $this->createMock(LoggerInterface::class);
+
+        $mockRouter = $this->createMock(Router::class);
+        $mockRouter->expects($this->once())
+            ->method('setLogger')
+            ->with($mockLogger);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getRequest',
+                'getResponse',
+                'getRouter',
+                'addMiddleware',
+                'callStack',
+                'outputResponse',
+            ])
+            ->getMock();
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+
+        $talus->expects($this->once())
+            ->method('getRequest')
+            ->willReturn($mockRequest);
+
+        $talus->expects($this->once())
+            ->method('getResponse')
+            ->willReturn($mockResponse);
+
+        $talus->expects($this->once())
+            ->method('getRouter')
+            ->willReturn($mockRouter);
+
+        $talus->expects($this->once())
+            ->method('addMiddleware')
+            ->with($mockRouter);
+
+        $talus->expects($this->once())
+            ->method('callStack')
+            ->willReturn($mockResponse);
+
+        $talus->run();
     }
 
     public function testRunCallsToStack()
     {
-        $this->markTestIncomplete('Talus::run() is not yet covered');
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+
+        $mockRequest = $this->createMock(RequestInterface::class);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockRouter = $this->createMock(Router::class);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getRequest',
+                'getResponse',
+                'getRouter',
+                'addMiddleware',
+                'callStack',
+                'outputResponse',
+            ])
+            ->getMock();
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+
+        $talus->expects($this->once())
+            ->method('getRequest')
+            ->willReturn($mockRequest);
+
+        $talus->expects($this->once())
+            ->method('getResponse')
+            ->willReturn($mockResponse);
+
+        $talus->expects($this->once())
+            ->method('getRouter')
+            ->willReturn($mockRouter);
+
+        $talus->expects($this->once())
+            ->method('callStack')
+            ->with($mockRequest, $mockResponse)
+            ->willReturn($mockResponse);
+
+        $talus->run();
     }
 
     public function testRunHandlesCallStackError()
     {
-        $this->markTestIncomplete('Talus::run() is not yet covered');
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+        $reflectedErrorHandler = $reflectedTalus->getProperty('errorHandler');
+        $reflectedErrorHandler->setAccessible(true);
+
+        $mockRequest = $this->createMock(RequestInterface::class);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockRouter = $this->createMock(Router::class);
+        $mockException = $this->createMock(Exception::class);
+
+        $mockErrorHandler = $this->getMockBuilder(stdclass::class)
+            ->setMethods(['__invoke'])
+            ->getMock();
+        $mockErrorHandler->expects($this->once())
+            ->method('__invoke')
+            ->with($mockRequest, $mockResponse, $mockException)
+            ->willReturn($mockResponse);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getRequest',
+                'getResponse',
+                'getRouter',
+                'addMiddleware',
+                'callStack',
+                'outputResponse',
+            ])
+            ->getMock();
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+        $reflectedErrorHandler->setValue($talus, $mockErrorHandler);
+
+        $talus->expects($this->once())
+            ->method('getRequest')
+            ->willReturn($mockRequest);
+
+        $talus->expects($this->once())
+            ->method('getResponse')
+            ->willReturn($mockResponse);
+
+        $talus->expects($this->once())
+            ->method('getRouter')
+            ->willReturn($mockRouter);
+
+        $talus->expects($this->once())
+            ->method('callStack')
+            ->with($mockRequest, $mockResponse)
+            ->will($this->throwException($mockException));
+
+        $talus->run();
     }
 
     public function testRunOutputsResultOfStack()
     {
-        $this->markTestIncomplete('Talus::run() is not yet covered');
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+
+        $mockRequest = $this->createMock(RequestInterface::class);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockRouter = $this->createMock(Router::class);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getRequest',
+                'getResponse',
+                'getRouter',
+                'addMiddleware',
+                'callStack',
+                'outputResponse',
+            ])
+            ->getMock();
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+
+        $talus->expects($this->once())
+            ->method('getRequest')
+            ->willReturn($mockRequest);
+
+        $talus->expects($this->once())
+            ->method('getResponse')
+            ->willReturn($mockResponse);
+
+        $talus->expects($this->once())
+            ->method('getRouter')
+            ->willReturn($mockRouter);
+
+        $talus->expects($this->once())
+            ->method('callStack')
+            ->willReturn($mockResponse);
+
+        $talus->expects($this->once())
+            ->method('outputResponse')
+            ->with($mockResponse);
+
+        $talus->run();
     }
 
     public function testOutputResponseSendsStatus()
@@ -304,12 +559,69 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testInvokeCallsOnController()
     {
-        $this->markTestIncomplete('Talus::__invoke() is not yet covered');
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedControllerList = $reflectedTalus->getProperty('controllerList');
+        $reflectedControllerList->setAccessible(true);
+
+        $mockRequest = $this->createMock(ServerRequestInterface::class);
+        $mockRequest->expects($this->once())
+            ->method('getAttribute')
+            ->with('swagger')
+            ->willReturn([
+                'operation' => [
+                    'operationId' => 'getThings',
+                ],
+            ]);
+
+        $mockResponse = $this->createMock(ResponseInterface::class);
+
+        $mockController = $this->getMockBuilder(stdclass::class)
+            ->setMethods([ '__invoke' ])
+            ->getMock();
+        $mockController->expects($this->once())
+            ->method('__invoke')
+            ->with($mockRequest, $mockResponse);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+        $reflectedControllerList->setValue($talus, [
+            'getThings' => $mockController,
+        ]);
+
+        $talus->__invoke($mockRequest, $mockResponse);
     }
 
+    /**
+     * @expectedException DomainException
+     * @expectedExceptionMessage Operation is not defined with a controller
+     */
     public function testInvokeBailsOnMissingController()
     {
-        $this->markTestIncomplete('Talus::__invoke() is not yet covered');
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedControllerList = $reflectedTalus->getProperty('controllerList');
+        $reflectedControllerList->setAccessible(true);
+
+        $mockRequest = $this->createMock(ServerRequestInterface::class);
+        $mockRequest->expects($this->once())
+            ->method('getAttribute')
+            ->with('swagger')
+            ->willReturn([
+                'operation' => [
+                    'operationId' => 'getThings',
+                ],
+            ]);
+
+        $mockResponse = $this->createMock(ResponseInterface::class);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+        $reflectedControllerList->setValue($talus, []);
+
+        $talus->__invoke($mockRequest, $mockResponse);
     }
 
     public function testGetRequest()
@@ -340,5 +652,24 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $response = $reflectedResponse->invoke($talus);
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+
+    public function testGetRouter()
+    {
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedSwagger = $reflectedTalus->getProperty('swagger');
+        $reflectedSwagger->setAccessible(true);
+        $reflectedRouter = $reflectedTalus->getMethod('getRouter');
+        $reflectedRouter->setAccessible(true);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods()
+            ->getMock();
+        $reflectedSwagger->setValue($talus, []);
+        $router = $reflectedRouter->invoke($talus);
+
+        $this->assertInstanceOf(Router::class, $router);
+        $this->assertAttributeEquals([], 'swagger', $router);
     }
 }

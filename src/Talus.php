@@ -86,9 +86,9 @@ class Talus implements LoggerAwareInterface
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
-        $swaggerRouter = new Router($this->swagger);
-        $swaggerRouter->setLogger($this->logger);
-        $this->addMiddleware($swaggerRouter);
+        $router = $this->getRouter();
+        $router->setLogger($this->logger);
+        $this->addMiddleware($router);
 
         try {
             $result = $this->callStack($request, $response);
@@ -153,5 +153,13 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
+    }
+
+    /**
+     * @return Router
+     */
+    public function getRouter()
+    {
+        return new Router($this->swagger);
     }
 }

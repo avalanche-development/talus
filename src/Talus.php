@@ -35,37 +35,36 @@ class Talus implements LoggerAwareInterface
     /** @var array $swagger */
     protected $swagger;
 
+    /** @var array $controllerList */
+    protected $controllerList;
+
     /** @var callable $errorHandler */
     protected $errorHandler;
 
     /**
-     * @param array $config
+     * @param array $swagger
+     * @param ContainerInterface $container
      */
-    // todo do we really need an array here
-    public function __construct(array $config)
+    public function __construct(array $swagger, ContainerInterface $container)
     {
-        if (!empty($config['container'])) {
-            if (!($config['container'] instanceof ContainerInterface)) {
-                throw new InvalidArgumentException('container must be instance of ContainerInterface');
-            }
-            $this->container = $config['container'];
-        }
+        $this->swagger = $swagger;
+        $this->container = $container;
 
         $this->logger = new NullLogger;
-        // todo we probably shouldn't allow passing in logger as config key
-        if (!empty($config['logger'])) {
-            if (!($config['logger'] instanceof LoggerInterface)) {
-                throw new InvalidArgumentException('logger must be instance of LoggerInterface');
-            }
-            $this->logger = $config['logger'];
-        }
-
         $this->errorHandler = new ErrorHandler;
+    }
 
-        if (empty($config['swagger'])) {
-            throw new DomainException('missing swagger information');
+    /**
+     * @param string $operationId
+     * @param callable $controller
+     */
+    public function addController($operationId, $controller)
+    {
+        if (!is_callable($controller)) {
+            throw new InvalidArgumentException('Controller must be callable');
         }
-        $this->swagger = $config['swagger'];
+
+        $this->controllerList[$operationId] = $controller;
     }
 
     /**
@@ -74,7 +73,7 @@ class Talus implements LoggerAwareInterface
     public function setErrorHandler($errorHandler)
     {
         if (!is_callable($errorHandler)) {
-            throw new InvalidArgumentException('error handler must be callable');
+            throw new InvalidArgumentException('Error handler must be callable');
         }
 
         $this->errorHandler = $errorHandler;
@@ -87,9 +86,9 @@ class Talus implements LoggerAwareInterface
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
-        $swaggerRouter = new Router($this->swagger);
-        $swaggerRouter->setLogger($this->logger);
-        $this->addMiddleware($swaggerRouter);
+        $router = $this->getRouter();
+        $router->setLogger($this->logger);
+        $this->addMiddleware($router);
 
         try {
             $result = $this->callStack($request, $response);
@@ -131,13 +130,13 @@ class Talus implements LoggerAwareInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
-        // todo this could be operation-level
-        $controllerName = $request->getAttribute('swagger')['path']['x-swagger-router-controller'];
-        $methodName = $request->getAttribute('swagger')['operation']['operationId'];
+        $operation = $request->getAttribute('swagger')['operation']['operationId'];
 
-        // todo this should be container-controlled
-        $controller = new $controllerName($this->container);
-        return $controller->$methodName($request, $response);
+        if (!array_key_exists($operation, $this->controllerList)) {
+            throw new DomainException('Operation is not defined with a controller');
+        }
+
+        return call_user_func($this->controllerList[$operation], $request, $response);
     }
 
     /**
@@ -154,5 +153,13 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
+    }
+
+    /**
+     * @return Router
+     */
+    public function getRouter()
+    {
+        return new Router($this->swagger);
     }
 }

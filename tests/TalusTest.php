@@ -9,7 +9,6 @@ use stdclass;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
-use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,57 +22,39 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testIsInstanceOfTalus()
     {
-        $container = $this->createMock(ContainerInterface::class);
-
-        $talus = new Talus([], $container);
+        $talus = new Talus([]);
 
         $this->assertInstanceOf(Talus::class, $talus);
     }
 
     public function testTalusImplementsLoggerInterface()
     {
-        $container = $this->createMock(ContainerInterface::class);
-
-        $talus = new Talus([], $container);
+        $talus = new Talus([]);
 
         $this->assertInstanceOf(LoggerAwareInterface::class, $talus);
     }
 
     public function testConstructSetsNullLogger()
     {
-        $container = $this->createMock(ContainerInterface::class);
-
-        $talus = new Talus([], $container);
+        $talus = new Talus([]);
 
         $this->assertAttributeInstanceOf(NullLogger::class, 'logger', $talus);
     }
 
     public function testConstructSetsErrorHandler()
     {
-        $container = $this->createMock(ContainerInterface::class);
-
-        $talus = new Talus([], $container);
+        $talus = new Talus([]);
 
         $this->assertAttributeInstanceOf(ErrorHandler::class, 'errorHandler', $talus);
     }
 
     public function testConstructSetsSwagger()
     {
-        $container = $this->createMock(ContainerInterface::class);
         $swagger = ['swagger'];
 
-        $talus = new Talus($swagger, $container);
+        $talus = new Talus($swagger);
 
         $this->assertAttributeEquals($swagger, 'swagger', $talus);
-    }
-
-    public function testConstructSetsContainer()
-    {
-        $container = $this->createMock(ContainerInterface::class);
-
-        $talus = new Talus([], $container);
-
-        $this->assertAttributeSame($container, 'container', $talus);
     }
 
     public function testAddController()

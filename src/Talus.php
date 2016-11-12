@@ -12,7 +12,6 @@ use InvalidArgumentException;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
-use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -29,9 +28,6 @@ class Talus implements LoggerAwareInterface
 
     use MiddlewareAwareTrait;
 
-    /** @var ContainerInterface $container */
-    protected $container;
-
     /** @var array $swagger */
     protected $swagger;
 
@@ -43,12 +39,10 @@ class Talus implements LoggerAwareInterface
 
     /**
      * @param array $swagger
-     * @param ContainerInterface $container
      */
-    public function __construct(array $swagger, ContainerInterface $container)
+    public function __construct(array $swagger)
     {
         $this->swagger = $swagger;
-        $this->container = $container;
 
         $this->logger = new NullLogger;
         $this->errorHandler = new ErrorHandler;

@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "33cbc71a6a2ef447f60ad3cdb7e18a85",
-    "content-hash": "f78c57eaf3df983f81fd02297619b989",
+    "hash": "435472abc0dcf3375aeb2be3183667cb",
+    "content-hash": "878c4bc97bb248e94c4671c336de15df",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/crash-pad.git",
-                "reference": "973ff76556cff4b0328db844c65be9342617d080"
+                "reference": "d8657fa0c89755ce52c8fca35510889a408d4a60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/crash-pad/zipball/973ff76556cff4b0328db844c65be9342617d080",
-                "reference": "973ff76556cff4b0328db844c65be9342617d080",
+                "url": "https://api.github.com/repos/avalanche-development/crash-pad/zipball/d8657fa0c89755ce52c8fca35510889a408d4a60",
+                "reference": "d8657fa0c89755ce52c8fca35510889a408d4a60",
                 "shasum": ""
             },
             "require": {
@@ -46,20 +46,20 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-07 00:19:27"
+            "time": "2016-11-12 18:06:32"
         },
         {
             "name": "avalanche-development/peel",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/peel.git",
-                "reference": "4c8357f694b956456390cbbdfc22ca7b3ab26748"
+                "reference": "77b0cac07af981bb180477f94b80e4fc40a760bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/peel/zipball/4c8357f694b956456390cbbdfc22ca7b3ab26748",
-                "reference": "4c8357f694b956456390cbbdfc22ca7b3ab26748",
+                "url": "https://api.github.com/repos/avalanche-development/peel/zipball/77b0cac07af981bb180477f94b80e4fc40a760bd",
+                "reference": "77b0cac07af981bb180477f94b80e4fc40a760bd",
                 "shasum": ""
             },
             "require": {
@@ -85,20 +85,20 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-06 00:12:10"
+            "time": "2016-11-12 18:03:35"
         },
         {
             "name": "avalanche-development/swagger-router-middleware",
-            "version": "0.3.5",
+            "version": "0.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "f4e307c16854ce3eb300d387ce3e4d918873bef0"
+                "reference": "004834aaa0866ea31e32487697e647d8a4d0f91b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/f4e307c16854ce3eb300d387ce3e4d918873bef0",
-                "reference": "f4e307c16854ce3eb300d387ce3e4d918873bef0",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/004834aaa0866ea31e32487697e647d8a4d0f91b",
+                "reference": "004834aaa0866ea31e32487697e647d8a4d0f91b",
                 "shasum": ""
             },
             "require": {
@@ -127,34 +127,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-12 11:18:51"
-        },
-        {
-            "name": "container-interop/container-interop",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/container-interop/container-interop.git",
-                "reference": "fc08354828f8fd3245f77a66b9e23a6bca48297e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/container-interop/container-interop/zipball/fc08354828f8fd3245f77a66b9e23a6bca48297e",
-                "reference": "fc08354828f8fd3245f77a66b9e23a6bca48297e",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Interop\\Container\\": "src/Interop/Container/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
-            "time": "2014-12-30 15:22:37"
+            "time": "2016-11-12 18:12:20"
         },
         {
             "name": "psr/http-message",

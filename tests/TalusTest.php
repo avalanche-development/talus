@@ -12,6 +12,8 @@ use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 class TalusTest extends PHPUnit_Framework_TestCase
 {
@@ -22,7 +24,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $talus = new Talus([], $container);
 
-        $this->assertInstanceOf('AvalancheDevelopment\Talus\Talus', $talus);
+        $this->assertInstanceOf(Talus::class, $talus);
     }
 
     public function testTalusImplementsLoggerInterface()
@@ -31,16 +33,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $talus = new Talus([], $container);
 
-        $this->assertInstanceOf('Psr\Log\LoggerAwareInterface', $talus);
-    }
-
-    public function testConstructSetsContainer()
-    {
-        $container = $this->createMock(ContainerInterface::class);
-
-        $talus = new Talus([], $container);
-
-        $this->assertAttributeSame($container, 'container', $talus);
+        $this->assertInstanceOf(LoggerAwareInterface::class, $talus);
     }
 
     public function testConstructSetsNullLogger()
@@ -49,7 +42,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $talus = new Talus([], $container);
 
-        $this->assertAttributeInstanceOf('Psr\Log\NullLogger', 'logger', $talus);
+        $this->assertAttributeInstanceOf(NullLogger::class, 'logger', $talus);
     }
 
     public function testConstructSetsErrorHandler()
@@ -69,6 +62,25 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $talus = new Talus($swagger, $container);
 
         $this->assertAttributeEquals($swagger, 'swagger', $talus);
+    }
+
+    public function testConstructSetsContainer()
+    {
+        $container = $this->createMock(ContainerInterface::class);
+
+        $talus = new Talus([], $container);
+
+        $this->assertAttributeSame($container, 'container', $talus);
+    }
+
+    public function testAddController()
+    {
+        $this->markTestIncomplete('Talus::addController is not yet covered');
+    }
+
+    public function testAddControllerBailsOnBadController()
+    {
+        $this->markTestIncomplete('Talus::addController is not yet covered');
     }
 
     public function testSetErrorHandler()
@@ -99,7 +111,27 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $talus->setErrorHandler($errorHandler);
     }
 
-    public function testRun()
+    public function testRunLogsIncomingRun()
+    {
+        $this->markTestIncomplete('Talus::run() is not yet covered');
+    }
+
+    public function testRunSetsUpRouterMiddleware()
+    {
+        $this->markTestIncomplete('Talus::run() is not yet covered');
+    }
+
+    public function testRunCallsToStack()
+    {
+        $this->markTestIncomplete('Talus::run() is not yet covered');
+    }
+
+    public function testRunHandlesCallStackError()
+    {
+        $this->markTestIncomplete('Talus::run() is not yet covered');
+    }
+
+    public function testRunOutputsResultOfStack()
     {
         $this->markTestIncomplete('Talus::run() is not yet covered');
     }
@@ -117,13 +149,17 @@ class TalusTest extends PHPUnit_Framework_TestCase
         ]);
         $expectedHeaders = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
+        $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
-        $mockResponse->method('getStatusCode')->willReturn($statusCode);
-        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockResponse->expects($this->exactly(2))
+            ->method('getStatusCode')
+            ->willReturn($statusCode);
+        $mockResponse->expects($this->once())
+            ->method('getReasonPhrase')
+            ->willReturn($reasonPhrase);
 
         $this->expectOutputString($expectedHeaders);
 
@@ -157,14 +193,20 @@ class TalusTest extends PHPUnit_Framework_TestCase
         }
         $expectedHeaders = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
+        $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
-        $mockResponse->method('getStatusCode')->willReturn($statusCode);
-        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
-        $mockResponse->method('getHeaders')->willReturn($headers);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockResponse->expects($this->exactly(2))
+            ->method('getStatusCode')
+            ->willReturn($statusCode);
+        $mockResponse->expects($this->once())
+            ->method('getReasonPhrase')
+            ->willReturn($reasonPhrase);
+        $mockResponse->expects($this->exactly(2))
+            ->method('getHeaders')
+            ->willReturn($headers);
 
         $this->expectOutputString($expectedHeaders);
 
@@ -197,14 +239,20 @@ class TalusTest extends PHPUnit_Framework_TestCase
         }
         $expectedHeaders = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
+        $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
-        $mockResponse->method('getStatusCode')->willReturn($statusCode);
-        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
-        $mockResponse->method('getHeaders')->willReturn($headers);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockResponse->expects($this->exactly(2))
+            ->method('getStatusCode')
+            ->willReturn($statusCode);
+        $mockResponse->expects($this->once())
+            ->method('getReasonPhrase')
+            ->willReturn($reasonPhrase);
+        $mockResponse->expects($this->exactly(2))
+            ->method('getHeaders')
+            ->willReturn($headers);
 
         $this->expectOutputString($expectedHeaders);
 
@@ -230,14 +278,20 @@ class TalusTest extends PHPUnit_Framework_TestCase
         echo $body;
         $expectedOutput = ob_get_clean();
 
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
+        $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
 
-        $mockResponse = $this->createMock('Psr\Http\Message\ResponseInterface');
-        $mockResponse->method('getStatusCode')->willReturn($statusCode);
-        $mockResponse->method('getReasonPhrase')->willReturn($reasonPhrase);
-        $mockResponse->method('getBody')->willReturn($body);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockResponse->expects($this->exactly(2))
+            ->method('getStatusCode')
+            ->willReturn($statusCode);
+        $mockResponse->expects($this->once())
+            ->method('getReasonPhrase')
+            ->willReturn($reasonPhrase);
+        $mockResponse->expects($this->once())
+            ->method('getBody')
+            ->willReturn($body);
 
         $this->expectOutputString($expectedOutput);
 
@@ -248,14 +302,19 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedOutput->invokeArgs($talus, [$mockResponse]);
     }
 
-    public function testInvoke()
+    public function testInvokeCallsOnController()
+    {
+        $this->markTestIncomplete('Talus::__invoke() is not yet covered');
+    }
+
+    public function testInvokeBailsOnMissingController()
     {
         $this->markTestIncomplete('Talus::__invoke() is not yet covered');
     }
 
     public function testGetRequest()
     {
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
+        $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedRequest = $reflectedTalus->getMethod('getRequest');
         $reflectedRequest->setAccessible(true);
 
@@ -265,12 +324,12 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $request = $reflectedRequest->invoke($talus);
 
-        $this->assertInstanceOf('Psr\Http\Message\RequestInterface', $request);
+        $this->assertInstanceOf(RequestInterface::class, $request);
     }
 
     public function testGetResponse()
     {
-        $reflectedTalus = new ReflectionClass('AvalancheDevelopment\Talus\Talus');
+        $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedResponse = $reflectedTalus->getMethod('getResponse');
         $reflectedResponse->setAccessible(true);
 
@@ -280,6 +339,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $response = $reflectedResponse->invoke($talus);
 
-        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
+        $this->assertInstanceOf(ResponseInterface::class, $response);
     }
 }

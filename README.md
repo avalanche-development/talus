@@ -24,6 +24,14 @@ This microframework uses [swagger-router-middleware](https://github.com/avalanch
 $talus = new AvalancheDevelopment\Talus\Talus([..swagger..]);
 ```
 
+The parsed swagger information is available via the `swagger` attribute on the request. In your application, you can access this information like so.
+
+```php
+function ($request, $response) {
+  $someParameter = $request->getAttribute('swagger')['params']['someParameter'];
+}
+```
+
 ### Controllers
 
 Controllers are attached to routes by the operationId in the swagger spec. Each operation should have a unique operationId, and this will inform talus which controller to invoke. Controllers must be callable and have a `function ($request, $response)` interface.

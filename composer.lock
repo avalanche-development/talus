@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "435472abc0dcf3375aeb2be3183667cb",
-    "content-hash": "878c4bc97bb248e94c4671c336de15df",
+    "hash": "46abd375a179b3078802aefa3196ee6f",
+    "content-hash": "e7717bb19e247022d5fd35d99c625374",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
@@ -89,16 +89,16 @@
         },
         {
             "name": "avalanche-development/swagger-router-middleware",
-            "version": "0.3.6",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "004834aaa0866ea31e32487697e647d8a4d0f91b"
+                "reference": "2f0524cd3b04062a197c76d583a66fbfd5d265de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/004834aaa0866ea31e32487697e647d8a4d0f91b",
-                "reference": "004834aaa0866ea31e32487697e647d8a4d0f91b",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/2f0524cd3b04062a197c76d583a66fbfd5d265de",
+                "reference": "2f0524cd3b04062a197c76d583a66fbfd5d265de",
                 "shasum": ""
             },
             "require": {
@@ -127,7 +127,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-11-12 18:12:20"
+            "time": "2016-11-13 01:40:23"
         },
         {
             "name": "psr/http-message",

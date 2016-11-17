@@ -324,6 +324,67 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $talus->run();
     }
 
+    public function testRunAttachesLoggerToErrorHandler()
+    {
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+        $reflectedErrorHandler = $reflectedTalus->getProperty('errorHandler');
+        $reflectedErrorHandler->setAccessible(true);
+
+        $mockRequest = $this->createMock(RequestInterface::class);
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockRouter = $this->createMock(Router::class);
+        $mockException = $this->createMock(Exception::class);
+
+        $mockErrorHandler = $this->getMockBuilder(LoggerAwareInterface::class)
+            ->setMethods([
+                '__invoke',
+                'setLogger',
+            ])
+            ->getMock();
+        $mockErrorHandler->method('__invoke')
+            ->willReturn($mockResponse);
+        $mockErrorHandler->expects($this->once())
+            ->method('setLogger')
+            ->with($mockLogger);
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getRequest',
+                'getResponse',
+                'getRouter',
+                'addMiddleware',
+                'callStack',
+                'outputResponse',
+            ])
+            ->getMock();
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+        $reflectedErrorHandler->setValue($talus, $mockErrorHandler);
+
+        $talus->expects($this->once())
+            ->method('getRequest')
+            ->willReturn($mockRequest);
+
+        $talus->expects($this->once())
+            ->method('getResponse')
+            ->willReturn($mockResponse);
+
+        $talus->expects($this->once())
+            ->method('getRouter')
+            ->willReturn($mockRouter);
+
+        $talus->expects($this->once())
+            ->method('callStack')
+            ->with($mockRequest, $mockResponse)
+            ->will($this->throwException($mockException));
+
+        $talus->run();
+    }
+
     public function testRunOutputsResultOfStack()
     {
         $reflectedTalus = new ReflectionClass(Talus::class);

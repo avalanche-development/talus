@@ -9,6 +9,7 @@ use stdclass;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
+use AvalancheDevelopment\SwaggerHeaderMiddleware\Header;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -161,50 +162,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
         $talus->expects($this->once())
             ->method('getResponse')
-            ->willReturn($mockResponse);
-
-        $talus->run();
-    }
-
-    public function testRunBuildsMiddleware()
-    {
-        $this->markTestIncomplete();
-
-        $reflectedTalus = new ReflectionClass(Talus::class);
-        $reflectedLogger = $reflectedTalus->getProperty('logger');
-        $reflectedLogger->setAccessible(true);
-
-        $mockRequest = $this->createMock(RequestInterface::class);
-        $mockResponse = $this->createMock(ResponseInterface::class);
-        $mockLogger = $this->createMock(LoggerInterface::class);
-
-        $talus = $this->getMockBuilder(Talus::class)
-            ->disableOriginalConstructor()
-            ->setMethods([
-                'getRequest',
-                'getResponse',
-                'addMiddleware',
-                'callStack',
-                'outputResponse',
-            ])
-            ->getMock();
-
-        $reflectedLogger->setValue($talus, $mockLogger);
-
-        $talus->expects($this->once())
-            ->method('getRequest')
-            ->willReturn($mockRequest);
-
-        $talus->expects($this->once())
-            ->method('getResponse')
-            ->willReturn($mockResponse);
-
-        $talus->expects($this->once())
-            ->method('addMiddleware')
-            ->with($mockRouter);
-
-        $talus->expects($this->once())
-            ->method('callStack')
             ->willReturn($mockResponse);
 
         $talus->run();
@@ -407,6 +364,73 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->with($mockResponse);
 
         $talus->run();
+    }
+
+    public function testBuildMiddlewareStackAddsHeaderMiddleware()
+    {
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedBuildMiddlewareStack = $reflectedTalus->getMethod('buildMiddlewareStack');
+        $reflectedBuildMiddlewareStack->setAccessible(true);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+        $reflectedSwagger = $reflectedTalus->getProperty('swagger');
+        $reflectedSwagger->setAccessible(true);
+
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockSwagger = [ 'some value' ];
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'addMiddleware',
+            ])
+            ->getMock();
+
+        $talus->expects($this->at(0))
+            ->method('addMiddleware')
+            ->with($this->logicalAnd(
+                $this->isInstanceOf(Header::class),
+                $this->classHasAttribute('logger', $mockLogger)
+            ));
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+        $reflectedSwagger->setValue($talus, $mockSwagger);
+
+        $reflectedBuildMiddlewareStack->invoke($talus);
+    }
+
+    public function testBuildMiddlewareStackAddsRouterMiddleware()
+    {
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedBuildMiddlewareStack = $reflectedTalus->getMethod('buildMiddlewareStack');
+        $reflectedBuildMiddlewareStack->setAccessible(true);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+        $reflectedSwagger = $reflectedTalus->getProperty('swagger');
+        $reflectedSwagger->setAccessible(true);
+
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockSwagger = [ 'some value' ];
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'addMiddleware',
+            ])
+            ->getMock();
+
+        $talus->expects($this->at(1))
+            ->method('addMiddleware')
+            ->with($this->logicalAnd(
+                $this->isInstanceOf(Router::class),
+                $this->classHasAttribute('logger', $mockLogger),
+                $this->classHasAttribute('swagger', $mockSwagger)
+            ));
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+        $reflectedSwagger->setValue($talus, $mockSwagger);
+
+        $reflectedBuildMiddlewareStack->invoke($talus);
     }
 
     public function testOutputResponseSendsStatus()

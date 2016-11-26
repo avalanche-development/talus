@@ -11,6 +11,7 @@ use Exception;
 use InvalidArgumentException;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
+use AvalancheDevelopment\SwaggerHeaderMiddleware\Header;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -80,9 +81,7 @@ class Talus implements LoggerAwareInterface
 
         $this->logger->debug('Talus: walking through swagger doc looking for dispatch');
 
-        $router = $this->getRouter();
-        $router->setLogger($this->logger);
-        $this->addMiddleware($router);
+        $this->buildMiddlewareStack();
 
         try {
             $result = $this->callStack($request, $response);
@@ -95,6 +94,17 @@ class Talus implements LoggerAwareInterface
         }
 
         $this->outputResponse($result);
+    }
+
+    public function buildMiddlewareStack()
+    {
+        $header = new Header;
+        $header->setLogger($this->logger);
+        $this->addMiddleware($header);
+
+        $router = new Router($this->swagger);
+        $router->setLogger($this->logger);
+        $this->addMiddleware($router);
     }
 
     /**
@@ -151,13 +161,5 @@ class Talus implements LoggerAwareInterface
     protected function getResponse()
     {
         return new Response();
-    }
-
-    /**
-     * @return Router
-     */
-    public function getRouter()
-    {
-        return new Router($this->swagger);
     }
 }

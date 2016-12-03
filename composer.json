@@ -13,7 +13,7 @@
         "avalanche-development/crash-pad": "^0.4",
         "avalanche-development/peel": "^0.2",
         "avalanche-development/swagger-header-middleware": "^0.1",
-        "avalanche-development/swagger-router-middleware": "^0.8",
+        "avalanche-development/swagger-router-middleware": "^0.9",
         "psr/http-message": "^1.0",
         "psr/log": "^1.0",
         "zendframework/zend-diactoros": "^1.3"

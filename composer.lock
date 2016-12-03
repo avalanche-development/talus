@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9bb081422f55cd8e7c69e1994a64f24d",
-    "content-hash": "ee10a53a4badd3c0e4cb330de1991358",
+    "hash": "93953916beaa2e39123b0fb4e42b857d",
+    "content-hash": "738b7142c233caec8baaaf975158f015",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
@@ -133,16 +133,16 @@
         },
         {
             "name": "avalanche-development/swagger-router-middleware",
-            "version": "0.8.1",
+            "version": "0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "ca75e1c0b37d992ee773d0c0acab43a2aec8a082"
+                "reference": "df4d95ce9a8ba0a68f5190f432670733502ed385"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/ca75e1c0b37d992ee773d0c0acab43a2aec8a082",
-                "reference": "ca75e1c0b37d992ee773d0c0acab43a2aec8a082",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/df4d95ce9a8ba0a68f5190f432670733502ed385",
+                "reference": "df4d95ce9a8ba0a68f5190f432670733502ed385",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +171,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-12-02 01:44:01"
+            "time": "2016-12-03 13:19:58"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -1085,16 +1085,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.6.7",
+            "version": "5.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "38810e97481723ef918f6e35c03cb1014a645bd5"
+                "reference": "336aff0ac52e306c98e7455bc3e8d7b0bf777a5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/38810e97481723ef918f6e35c03cb1014a645bd5",
-                "reference": "38810e97481723ef918f6e35c03cb1014a645bd5",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/336aff0ac52e306c98e7455bc3e8d7b0bf777a5e",
+                "reference": "336aff0ac52e306c98e7455bc3e8d7b0bf777a5e",
                 "shasum": ""
             },
             "require": {
@@ -1113,7 +1113,7 @@
                 "phpunit/phpunit-mock-objects": "^3.2",
                 "sebastian/comparator": "~1.2.2",
                 "sebastian/diff": "~1.2",
-                "sebastian/environment": "^1.3 || ^2.0",
+                "sebastian/environment": "^1.3.4 || ^2.0",
                 "sebastian/exporter": "~2.0",
                 "sebastian/global-state": "~1.0",
                 "sebastian/object-enumerator": "~2.0",
@@ -1137,7 +1137,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.6.x-dev"
+                    "dev-master": "5.7.x-dev"
                 }
             },
             "autoload": {
@@ -1163,7 +1163,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-11-28 16:04:24"
+            "time": "2016-12-03 08:33:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

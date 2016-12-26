@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "bd26d89bbbaca1d822e26294f9709977",
-    "content-hash": "ee136656c849ddc8e594dcf2cbf64f95",
+    "hash": "386ae825513b87441e89a3f9c5f65604",
+    "content-hash": "0cb382a48b3d9b0981e74a3157737d60",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",

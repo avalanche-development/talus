@@ -435,6 +435,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testOutputResponseSendsStatus()
     {
+        $this->markTestIncomplete();
+
         $statusCode = 403;
         $reasonPhrase = 'Forbidden';
 
@@ -469,6 +471,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testOutputResponseSendsHeaders()
     {
+        $this->markTestIncomplete();
+
         $statusCode = 200;
         $reasonPhrase = 'OK';
         $headers = [
@@ -516,6 +520,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testOutputResponseSendsMultipleHeaders()
     {
+        $this->markTestIncomplete();
+
         $statusCode = 200;
         $reasonPhrase = 'OK';
         $headers = [
@@ -562,6 +568,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testOutputResponseSendsBody()
     {
+        $this->markTestIncomplete();
+
         $statusCode = 200;
         $reasonPhrase = 'OK';
         $body = 'Hello world!';

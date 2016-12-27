@@ -2,61 +2,135 @@
 
 namespace AvalancheDevelopment\Talus;
 
-use AvalancheDevelopment\Talus\Stub\MiddlewareAware as MiddlewareAwareStub;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 
 class MiddlewareAwareTraitTest extends PHPUnit_Framework_TestCase
 {
 
-    public function testAddMiddleware()
-    {
-        $this->markTestIncomplete();
-
-        $middleware = function () {};
-        $stub = new MiddlewareAwareStub();
-        $decoratedMiddleware = function () {};
-        $stackSize = $stub->addMiddleware($middleware);
-
-        $this->assertInternalType('integer', $stackSize);
-        $this->assertAttributeCount($stackSize, 'stack', $stub);
-
-        $reflectedStub = new ReflectionClass($stub);
-        $reflectedStack = $reflectedStub->getProperty('stack');
-        $reflectedStack->setAccessible(true);
-
-        $result = $reflectedStack->getValue($stub);
-        $result = reset($result);
-
-        $this->assertEquals($decoratedMiddleware, $result);
-    }
-
     public function testAddMiddlewareSeedsEmptyStack()
     {
-        $this->markTestIncomplete();
+        $trait = $this->getMockForTrait(
+            MiddlewareAwareTrait::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            [
+                'decorateMiddleware',
+                'seedStack',
+            ]
+        );
+        $trait->expects($this->once())
+            ->method('seedStack')
+            ->with($trait);
 
-        $middleware = function () {};
-        $stub = new MiddlewareAwareStub();
-        $stub->addMiddleware($middleware);
-
-        $this->assertAttributeContains($stub, 'stack', $stub);
+        $trait->addMiddleware(function () {});
     }
 
     public function testAddMiddlewareDoesNotRepeatSeed()
     {
-        $this->markTestIncomplete();
+        $trait = $this->getMockForTrait(
+            MiddlewareAwareTrait::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            [
+                'decorateMiddleware',
+                'seedStack',
+            ]
+        );
+        $trait->expects($this->never())
+            ->method('seedStack');
 
+        $reflectedTrait = new ReflectionClass($trait);
+        $reflectedStack = $reflectedTrait->getProperty('stack');
+        $reflectedStack->setAccessible(true);
+        $reflectedStack->setValue($trait, [ 'some value' ]);
+
+        $trait->addMiddleware(function () {});
+    }
+
+    public function testAddMiddlewareDecoratesMiddleware()
+    {
         $middleware = function () {};
-        $stub = new MiddlewareAwareStub();
 
-        $reflectedStub = new ReflectionClass($stub);
-        $reflectedSeedStack = $reflectedStub->getMethod('seedStack');
-        $reflectedSeedStack->setAccessible(true);
+        $trait = $this->getMockForTrait(
+            MiddlewareAwareTrait::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            [
+                'decorateMiddleware',
+                'seedStack',
+            ]
+        );
+        $trait->expects($this->once())
+            ->method('decorateMiddleware')
+            ->with($middleware);
 
-        $reflectedSeedStack->invokeArgs($stub, [$middleware]);
+        $trait->addMiddleware($middleware);
+    }
 
-        $stub->addMiddleware($middleware);
-        $this->assertAttributeNotContains($stub, 'stack', $stub);
+    public function testAddMiddlewareStacksDecoratedMiddleware()
+    {
+        $decoratedMiddleware = function () {};
+
+        $trait = $this->getMockForTrait(
+            MiddlewareAwareTrait::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            [
+                'decorateMiddleware',
+                'seedStack',
+            ]
+        );
+        $trait->method('decorateMiddleware')
+            ->willReturn($decoratedMiddleware);
+
+        $trait->addMiddleware(function () {});
+
+        $this->assertAttributeContains($decoratedMiddleware, 'stack', $trait);
+    }
+
+    public function testAddMiddlewareReturnsStackSize()
+    {
+        $stack = [
+            'one',
+            'two',
+        ];
+
+        $trait = $this->getMockForTrait(
+            MiddlewareAwareTrait::class,
+            [],
+            '',
+            false,
+            false,
+            true,
+            [
+                'decorateMiddleware',
+                'seedStack',
+            ]
+        );
+        $trait->method('decorateMiddleware')
+            ->willReturn('three');
+
+        $reflectedTrait = new ReflectionClass($trait);
+        $reflectedStack = $reflectedTrait->getProperty('stack');
+        $reflectedStack->setAccessible(true);
+        $reflectedStack->setValue($trait, $stack);
+
+        $stackSize = $trait->addMiddleware(function () {});
+
+        $this->assertEquals(count($stack) + 1, $stackSize);
     }
 
     public function testDecorateMiddleware()

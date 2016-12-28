@@ -10,16 +10,18 @@ use stdclass;
 use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
 use AvalancheDevelopment\SwaggerHeaderMiddleware\Header;
+use phpmock\phpunit\PHPMock;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class TalusTest extends PHPUnit_Framework_TestCase
 {
+
+    use PHPMock;
 
     public function testIsInstanceOfTalus()
     {
@@ -438,14 +440,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $statusCode = 403;
         $reasonPhrase = 'Forbidden';
 
-        ob_start();
-        print_r([
-            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
-            true,
-            $statusCode,
-        ]);
-        $expectedHeaders = ob_get_clean();
-
         $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
@@ -458,7 +452,13 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->method('getReasonPhrase')
             ->willReturn($reasonPhrase);
 
-        $this->expectOutputString($expectedHeaders);
+        $mockHeader = $this->getFunctionMock(__NAMESPACE__, 'header');
+        $mockHeader->expects($this->once())
+            ->with(
+                sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
+                true,
+                $statusCode
+            );
 
         $talus = $this->getMockBuilder(Talus::class)
             ->disableOriginalConstructor()
@@ -476,20 +476,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
             'Content-Language' => ['en/us'],
         ];
 
-        ob_start();
-        print_r([
-            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
-            true,
-            $statusCode,
-        ]);
-        foreach ($headers as $headerKey => $headerValue) {
-            print_r([
-                sprintf("%s: %s", $headerKey, implode(', ', $headerValue)),
-                true,
-            ]);
-        }
-        $expectedHeaders = ob_get_clean();
-
         $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
@@ -505,7 +491,22 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->method('getHeaders')
             ->willReturn($headers);
 
-        $this->expectOutputString($expectedHeaders);
+        $mockHeader = $this->getFunctionMock(__NAMESPACE__, 'header');
+        $mockHeader->expects($this->at(0))
+            ->with(
+                sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
+                true,
+                $statusCode
+            );
+        $callIndex = 1;
+        foreach ($headers as $headerKey => $headerValue) {
+            $mockHeader->expects($this->at($callIndex))
+                ->with(
+                    sprintf("%s: %s", $headerKey, implode(', ', $headerValue)),
+                    true
+                );
+            $callIndex++;
+        }
 
         $talus = $this->getMockBuilder(Talus::class)
             ->disableOriginalConstructor()
@@ -522,20 +523,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
             'Content-Type' => ['application/json', 'application/json+xml'],
         ];
 
-        ob_start();
-        print_r([
-            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
-            true,
-            $statusCode,
-        ]);
-        foreach ($headers as $headerKey => $headerValue) {
-            print_r([
-                sprintf("%s: %s", $headerKey, implode(', ', $headerValue)),
-                true,
-            ]);
-        }
-        $expectedHeaders = ob_get_clean();
-
         $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
         $reflectedOutput->setAccessible(true);
@@ -551,7 +538,22 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->method('getHeaders')
             ->willReturn($headers);
 
-        $this->expectOutputString($expectedHeaders);
+        $mockHeader = $this->getFunctionMock(__NAMESPACE__, 'header');
+        $mockHeader->expects($this->at(0))
+            ->with(
+                sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
+                true,
+                $statusCode
+            );
+        $callIndex = 1;
+        foreach ($headers as $headerKey => $headerValue) {
+            $mockHeader->expects($this->at($callIndex))
+                ->with(
+                    sprintf("%s: %s", $headerKey, implode(', ', $headerValue)),
+                    true
+                );
+            $callIndex++;
+        }
 
         $talus = $this->getMockBuilder(Talus::class)
             ->disableOriginalConstructor()
@@ -565,15 +567,6 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $statusCode = 200;
         $reasonPhrase = 'OK';
         $body = 'Hello world!';
-
-        ob_start();
-        print_r([
-            sprintf('HTTP/1.1 %d %s', $statusCode, $reasonPhrase),
-            true,
-            $statusCode,
-        ]);
-        echo $body;
-        $expectedOutput = ob_get_clean();
 
         $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedOutput = $reflectedTalus->getMethod('outputResponse');
@@ -590,7 +583,10 @@ class TalusTest extends PHPUnit_Framework_TestCase
             ->method('getBody')
             ->willReturn($body);
 
-        $this->expectOutputString($expectedOutput);
+        $mockHeader = $this->getFunctionMock(__NAMESPACE__, 'header');
+        $mockHeader->expects($this->once());
+
+        $this->expectOutputString($body);
 
         $talus = $this->getMockBuilder(Talus::class)
             ->disableOriginalConstructor()

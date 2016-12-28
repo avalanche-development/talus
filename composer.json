@@ -20,19 +20,12 @@
     },
     "require-dev": {
         "codeclimate/php-test-reporter": "^0.3.2",
-        "phpunit/phpunit": "^5.4"
+        "phpunit/phpunit": "^5.7",
+        "php-mock/php-mock-phpunit": "^1.1"
     },
     "autoload": {
         "psr-4": {
             "AvalancheDevelopment\\Talus\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "files": [
-            "tests/function-overrides.php"
-        ],
-        "psr-4": {
-            "AvalancheDevelopment\\Talus\\": "tests/"
         }
     }
 }

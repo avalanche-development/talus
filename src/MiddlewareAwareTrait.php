@@ -15,7 +15,9 @@ trait MiddlewareAwareTrait
 {
 
     /** @var array */
-    protected $stack;
+    protected $stack = [];
+
+    abstract public function __invoke(RequestInterface $request, ResponseInterface $response);
 
     /**
      * @param callable $callable

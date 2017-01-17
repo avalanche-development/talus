@@ -402,7 +402,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedBuildMiddlewareStack->invoke($talus);
     }
 
-    public function testBuildMiddlewareStackAddsRouterMiddleware()
+    public function testBuildMiddlewareStackAddsValidationMiddleware()
     {
         $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedBuildMiddlewareStack = $reflectedTalus->getMethod('buildMiddlewareStack');
@@ -425,9 +425,8 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $talus->expects($this->at(1))
             ->method('addMiddleware')
             ->with($this->logicalAnd(
-                $this->isInstanceOf(Router::class),
-                $this->classHasAttribute('logger', $mockLogger),
-                $this->classHasAttribute('swagger', $mockSwagger)
+                $this->isInstanceOf(Validation::class),
+                $this->classHasAttribute('logger', $mockLogger)
             ));
 
         $reflectedLogger->setValue($talus, $mockLogger);
@@ -436,7 +435,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedBuildMiddlewareStack->invoke($talus);
     }
 
-    public function testBuildMiddlewareStackAddsValidationMiddleware()
+    public function testBuildMiddlewareStackAddsRouterMiddleware()
     {
         $reflectedTalus = new ReflectionClass(Talus::class);
         $reflectedBuildMiddlewareStack = $reflectedTalus->getMethod('buildMiddlewareStack');
@@ -459,8 +458,9 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $talus->expects($this->at(2))
             ->method('addMiddleware')
             ->with($this->logicalAnd(
-                $this->isInstanceOf(Validation::class),
-                $this->classHasAttribute('logger', $mockLogger)
+                $this->isInstanceOf(Router::class),
+                $this->classHasAttribute('logger', $mockLogger),
+                $this->classHasAttribute('swagger', $mockSwagger)
             ));
 
         $reflectedLogger->setValue($talus, $mockLogger);

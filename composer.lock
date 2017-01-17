@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f8fe523de71bc862ed95c225d164777f",
-    "content-hash": "520e30f821a7fc0ef646dd5a2466c01c",
+    "hash": "c5a96ca1a280c605d0bce28fa99e6a65",
+    "content-hash": "ddb695fe34cbf1a89c668c7c79828c53",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
@@ -133,16 +133,16 @@
         },
         {
             "name": "avalanche-development/swagger-router-middleware",
-            "version": "0.10.0",
+            "version": "0.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "f208e5fb00b511b15ca3ad6685d38e9afa11b867"
+                "reference": "bf8bbf2369a0d97e7d121309aea83c5c4b2beed1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/f208e5fb00b511b15ca3ad6685d38e9afa11b867",
-                "reference": "f208e5fb00b511b15ca3ad6685d38e9afa11b867",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/bf8bbf2369a0d97e7d121309aea83c5c4b2beed1",
+                "reference": "bf8bbf2369a0d97e7d121309aea83c5c4b2beed1",
                 "shasum": ""
             },
             "require": {
@@ -171,20 +171,20 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2016-12-29 11:51:10"
+            "time": "2017-01-03 12:00:54"
         },
         {
             "name": "avalanche-development/swagger-validation-middleware",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-validation-middleware.git",
-                "reference": "e9ae26cd435f8c2198675bb0de6ae0248d24c841"
+                "reference": "0b2068955dee28b10d26cae43b2186f5b05c1c25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/e9ae26cd435f8c2198675bb0de6ae0248d24c841",
-                "reference": "e9ae26cd435f8c2198675bb0de6ae0248d24c841",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/0b2068955dee28b10d26cae43b2186f5b05c1c25",
+                "reference": "0b2068955dee28b10d26cae43b2186f5b05c1c25",
                 "shasum": ""
             },
             "require": {
@@ -213,7 +213,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-01-16 12:02:04"
+            "time": "2017-01-17 12:25:06"
         },
         {
             "name": "guzzlehttp/psr7",

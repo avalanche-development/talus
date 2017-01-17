@@ -103,13 +103,13 @@ class Talus implements LoggerAwareInterface
         $header->setLogger($this->logger);
         $this->addMiddleware($header);
 
-        $router = new Router($this->swagger);
-        $router->setLogger($this->logger);
-        $this->addMiddleware($router);
-
         $validation = new Validation;
         $validation->setLogger($this->logger);
         $this->addMiddleware($validation);
+
+        $router = new Router($this->swagger);
+        $router->setLogger($this->logger);
+        $this->addMiddleware($router);
     }
 
     /**

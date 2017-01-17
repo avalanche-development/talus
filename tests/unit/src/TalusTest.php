@@ -10,6 +10,7 @@ use stdclass;
 use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
 use AvalancheDevelopment\SwaggerHeaderMiddleware\Header;
+use AvalancheDevelopment\SwaggerValidationMiddleware\Validation;
 use phpmock\phpunit\PHPMock;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -427,6 +428,39 @@ class TalusTest extends PHPUnit_Framework_TestCase
                 $this->isInstanceOf(Router::class),
                 $this->classHasAttribute('logger', $mockLogger),
                 $this->classHasAttribute('swagger', $mockSwagger)
+            ));
+
+        $reflectedLogger->setValue($talus, $mockLogger);
+        $reflectedSwagger->setValue($talus, $mockSwagger);
+
+        $reflectedBuildMiddlewareStack->invoke($talus);
+    }
+
+    public function testBuildMiddlewareStackAddsValidationMiddleware()
+    {
+        $reflectedTalus = new ReflectionClass(Talus::class);
+        $reflectedBuildMiddlewareStack = $reflectedTalus->getMethod('buildMiddlewareStack');
+        $reflectedBuildMiddlewareStack->setAccessible(true);
+        $reflectedLogger = $reflectedTalus->getProperty('logger');
+        $reflectedLogger->setAccessible(true);
+        $reflectedSwagger = $reflectedTalus->getProperty('swagger');
+        $reflectedSwagger->setAccessible(true);
+
+        $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockSwagger = [ 'some value' ];
+
+        $talus = $this->getMockBuilder(Talus::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'addMiddleware',
+            ])
+            ->getMock();
+
+        $talus->expects($this->at(2))
+            ->method('addMiddleware')
+            ->with($this->logicalAnd(
+                $this->isInstanceOf(Validation::class),
+                $this->classHasAttribute('logger', $mockLogger)
             ));
 
         $reflectedLogger->setValue($talus, $mockLogger);

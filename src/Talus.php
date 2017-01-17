@@ -13,6 +13,7 @@ use InvalidArgumentException;
 use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerHeaderMiddleware\Header;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
+use AvalancheDevelopment\SwaggerValidationMiddleware\Validation;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -105,6 +106,10 @@ class Talus implements LoggerAwareInterface
         $router = new Router($this->swagger);
         $router->setLogger($this->logger);
         $this->addMiddleware($router);
+
+        $validation = new Validation;
+        $validation->setLogger($this->logger);
+        $this->addMiddleware($validation);
     }
 
     /**

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "aac1ddd8c6ba7ce2901a5a010d05eee1",
-    "content-hash": "62816fbb99417a68d768712d3ccf1ca1",
+    "hash": "bc886e12eb6f509d6b9261a81e345f06",
+    "content-hash": "2344a1a7e200a104254c642d91f06c2b",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
@@ -175,20 +175,21 @@
         },
         {
             "name": "avalanche-development/swagger-validation-middleware",
-            "version": "0.1.1",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-validation-middleware.git",
-                "reference": "0b2068955dee28b10d26cae43b2186f5b05c1c25"
+                "reference": "7731247a9c7511848eba5bbc1bc733fe0c49f2dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/0b2068955dee28b10d26cae43b2186f5b05c1c25",
-                "reference": "0b2068955dee28b10d26cae43b2186f5b05c1c25",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/7731247a9c7511848eba5bbc1bc733fe0c49f2dd",
+                "reference": "7731247a9c7511848eba5bbc1bc733fe0c49f2dd",
                 "shasum": ""
             },
             "require": {
                 "avalanche-development/peel": "^0.3.0",
+                "avalanche-development/swagger-router-middleware": "^1.0",
                 "php": ">=5.6.0",
                 "psr/http-message": "^1.0",
                 "psr/log": "^1.0"
@@ -213,7 +214,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-01-17 12:25:06"
+            "time": "2017-01-21 12:26:35"
         },
         {
             "name": "guzzlehttp/psr7",

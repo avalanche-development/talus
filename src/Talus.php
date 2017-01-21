@@ -143,7 +143,7 @@ class Talus implements LoggerAwareInterface
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response)
     {
-        $operation = $request->getAttribute('swagger')['operation']['operationId'];
+        $operation = $request->getAttribute('swagger')->getOperation()['operationId'];
 
         if (!array_key_exists($operation, $this->controllerList)) {
             throw new DomainException('Operation is not defined with a controller');

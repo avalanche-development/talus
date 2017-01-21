@@ -13,7 +13,7 @@
         "avalanche-development/crash-pad": "^0.5",
         "avalanche-development/peel": "^0.3",
         "avalanche-development/swagger-header-middleware": "^0.3",
-        "avalanche-development/swagger-router-middleware": "^0.11",
+        "avalanche-development/swagger-router-middleware": "^1.0",
         "avalanche-development/swagger-validation-middleware": "^0.1",
         "psr/http-message": "^1.0",
         "psr/log": "^1.0",

@@ -9,6 +9,7 @@ use stdclass;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
+use AvalancheDevelopment\SwaggerRouterMiddleware\ParsedSwaggerInterface;
 use AvalancheDevelopment\SwaggerHeaderMiddleware\Header;
 use AvalancheDevelopment\SwaggerValidationMiddleware\Validation;
 use phpmock\phpunit\PHPMock;
@@ -54,7 +55,7 @@ class TalusTest extends PHPUnit_Framework_TestCase
 
     public function testConstructSetsSwagger()
     {
-        $swagger = ['swagger'];
+        $swagger = [ 'swagger' ];
 
         $talus = new Talus($swagger);
 
@@ -635,15 +636,18 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedControllerList = $reflectedTalus->getProperty('controllerList');
         $reflectedControllerList->setAccessible(true);
 
+        $mockSwagger = $this->createMock(ParsedSwaggerInterface::class);
+        $mockSwagger->expects($this->once())
+            ->method('getOperation')
+            ->willReturn([
+                'operationId' => 'getThings',
+            ]);
+
         $mockRequest = $this->createMock(ServerRequestInterface::class);
         $mockRequest->expects($this->once())
             ->method('getAttribute')
             ->with('swagger')
-            ->willReturn([
-                'operation' => [
-                    'operationId' => 'getThings',
-                ],
-            ]);
+            ->willReturn($mockSwagger);
 
         $mockResponse = $this->createMock(ResponseInterface::class);
 
@@ -675,15 +679,18 @@ class TalusTest extends PHPUnit_Framework_TestCase
         $reflectedControllerList = $reflectedTalus->getProperty('controllerList');
         $reflectedControllerList->setAccessible(true);
 
+        $mockSwagger = $this->createMock(ParsedSwaggerInterface::class);
+        $mockSwagger->expects($this->once())
+            ->method('getOperation')
+            ->willReturn([
+                'operationId' => 'getThings',
+            ]);
+
         $mockRequest = $this->createMock(ServerRequestInterface::class);
         $mockRequest->expects($this->once())
             ->method('getAttribute')
             ->with('swagger')
-            ->willReturn([
-                'operation' => [
-                    'operationId' => 'getThings',
-                ],
-            ]);
+            ->willReturn($mockSwagger);
 
         $mockResponse = $this->createMock(ResponseInterface::class);
 

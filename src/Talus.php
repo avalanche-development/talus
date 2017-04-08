@@ -11,6 +11,7 @@ use Exception;
 use InvalidArgumentException;
 
 use AvalancheDevelopment\CrashPad\ErrorHandler;
+use AvalancheDevelopment\SwaggerCasterMiddleware\Caster;
 use AvalancheDevelopment\SwaggerHeaderMiddleware\Header;
 use AvalancheDevelopment\SwaggerRouterMiddleware\Router;
 use AvalancheDevelopment\SwaggerValidationMiddleware\Validation;
@@ -99,17 +100,21 @@ class Talus implements LoggerAwareInterface
 
     public function buildMiddlewareStack()
     {
-        $header = new Header;
-        $header->setLogger($this->logger);
-        $this->addMiddleware($header);
+        $router = new Router($this->swagger);
+        $router->setLogger($this->logger);
+        $this->addMiddleware($router);
 
         $validation = new Validation;
         $validation->setLogger($this->logger);
         $this->addMiddleware($validation);
 
-        $router = new Router($this->swagger);
-        $router->setLogger($this->logger);
-        $this->addMiddleware($router);
+        $header = new Header;
+        $header->setLogger($this->logger);
+        $this->addMiddleware($header);
+
+        $caster = new Caster;
+        $caster->setLogger($this->logger);
+        $this->addMiddleware($caster);
     }
 
     /**

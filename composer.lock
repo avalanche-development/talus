@@ -91,16 +91,16 @@
         },
         {
             "name": "avalanche-development/swagger-caster-middleware",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-caster-middleware.git",
-                "reference": "851b8d8f8836211e03e23f9951c1a80075a75c9e"
+                "reference": "a2de17d36ef6956e751dbad6f5c3a9ff0a19e05f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-caster-middleware/zipball/851b8d8f8836211e03e23f9951c1a80075a75c9e",
-                "reference": "851b8d8f8836211e03e23f9951c1a80075a75c9e",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-caster-middleware/zipball/a2de17d36ef6956e751dbad6f5c3a9ff0a19e05f",
+                "reference": "a2de17d36ef6956e751dbad6f5c3a9ff0a19e05f",
                 "shasum": ""
             },
             "require": {
@@ -129,7 +129,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-04-07 02:11:54"
+            "time": "2017-04-09 12:16:14"
         },
         {
             "name": "avalanche-development/swagger-header-middleware",

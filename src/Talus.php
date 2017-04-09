@@ -100,14 +100,6 @@ class Talus implements LoggerAwareInterface
 
     public function buildMiddlewareStack()
     {
-        $router = new Router($this->swagger);
-        $router->setLogger($this->logger);
-        $this->addMiddleware($router);
-
-        $validation = new Validation;
-        $validation->setLogger($this->logger);
-        $this->addMiddleware($validation);
-
         $header = new Header;
         $header->setLogger($this->logger);
         $this->addMiddleware($header);
@@ -115,6 +107,14 @@ class Talus implements LoggerAwareInterface
         $caster = new Caster;
         $caster->setLogger($this->logger);
         $this->addMiddleware($caster);
+
+        $validation = new Validation;
+        $validation->setLogger($this->logger);
+        $this->addMiddleware($validation);
+
+        $router = new Router($this->swagger);
+        $router->setLogger($this->logger);
+        $this->addMiddleware($router);
     }
 
     /**

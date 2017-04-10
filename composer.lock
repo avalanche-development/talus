@@ -217,16 +217,16 @@
         },
         {
             "name": "avalanche-development/swagger-validation-middleware",
-            "version": "0.4.0",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-validation-middleware.git",
-                "reference": "232e55d9a04a6c1ad50a98db57af8855fd88a621"
+                "reference": "d8ada44a7b03164e82ea229020e933db1d86c121"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/232e55d9a04a6c1ad50a98db57af8855fd88a621",
-                "reference": "232e55d9a04a6c1ad50a98db57af8855fd88a621",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/d8ada44a7b03164e82ea229020e933db1d86c121",
+                "reference": "d8ada44a7b03164e82ea229020e933db1d86c121",
                 "shasum": ""
             },
             "require": {
@@ -256,7 +256,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-04-10 11:47:25"
+            "time": "2017-04-10 11:54:35"
         },
         {
             "name": "guzzlehttp/psr7",

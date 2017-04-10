@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a3f0b54c112955f78fdfe0fdc17eb1a8",
-    "content-hash": "74241f7d4b3404e3d117b583e76e256a",
+    "hash": "6f8b804924e6755cb2e222bb069960c5",
+    "content-hash": "fe684bf9cc064a941f25e2507209a015",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
@@ -217,16 +217,16 @@
         },
         {
             "name": "avalanche-development/swagger-validation-middleware",
-            "version": "0.3.0",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-validation-middleware.git",
-                "reference": "21cf5cd336512833f0ba6908df8b331b4d942dcd"
+                "reference": "232e55d9a04a6c1ad50a98db57af8855fd88a621"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/21cf5cd336512833f0ba6908df8b331b4d942dcd",
-                "reference": "21cf5cd336512833f0ba6908df8b331b4d942dcd",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/232e55d9a04a6c1ad50a98db57af8855fd88a621",
+                "reference": "232e55d9a04a6c1ad50a98db57af8855fd88a621",
                 "shasum": ""
             },
             "require": {
@@ -256,7 +256,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-03-04 11:26:08"
+            "time": "2017-04-10 11:47:25"
         },
         {
             "name": "guzzlehttp/psr7",

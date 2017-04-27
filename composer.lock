@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6f8b804924e6755cb2e222bb069960c5",
-    "content-hash": "fe684bf9cc064a941f25e2507209a015",
+    "hash": "00f7ce8cfa8a91e01ff324adb658852e",
+    "content-hash": "1e9d92e3d6326951c945219cea75bd2e",
     "packages": [
         {
             "name": "avalanche-development/crash-pad",
@@ -91,16 +91,16 @@
         },
         {
             "name": "avalanche-development/swagger-caster-middleware",
-            "version": "0.1.1",
+            "version": "0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-caster-middleware.git",
-                "reference": "a2de17d36ef6956e751dbad6f5c3a9ff0a19e05f"
+                "reference": "51ac29668618bef08955234a65eec0b0a1fadf38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-caster-middleware/zipball/a2de17d36ef6956e751dbad6f5c3a9ff0a19e05f",
-                "reference": "a2de17d36ef6956e751dbad6f5c3a9ff0a19e05f",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-caster-middleware/zipball/51ac29668618bef08955234a65eec0b0a1fadf38",
+                "reference": "51ac29668618bef08955234a65eec0b0a1fadf38",
                 "shasum": ""
             },
             "require": {
@@ -129,7 +129,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-04-09 12:16:14"
+            "time": "2017-04-27 12:01:22"
         },
         {
             "name": "avalanche-development/swagger-header-middleware",
@@ -175,16 +175,16 @@
         },
         {
             "name": "avalanche-development/swagger-router-middleware",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-router-middleware.git",
-                "reference": "61e7948f048fb552828c7b131ece75d89f373ad7"
+                "reference": "727240269b02eeedd7d604d4f687a578fb47cd52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/61e7948f048fb552828c7b131ece75d89f373ad7",
-                "reference": "61e7948f048fb552828c7b131ece75d89f373ad7",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-router-middleware/zipball/727240269b02eeedd7d604d4f687a578fb47cd52",
+                "reference": "727240269b02eeedd7d604d4f687a578fb47cd52",
                 "shasum": ""
             },
             "require": {
@@ -213,20 +213,20 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-04-08 03:54:49"
+            "time": "2017-04-27 03:10:24"
         },
         {
             "name": "avalanche-development/swagger-validation-middleware",
-            "version": "0.4.1",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/avalanche-development/swagger-validation-middleware.git",
-                "reference": "d8ada44a7b03164e82ea229020e933db1d86c121"
+                "reference": "68919d72cc1f43feac7d6270009d0a5cd8f05d70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/d8ada44a7b03164e82ea229020e933db1d86c121",
-                "reference": "d8ada44a7b03164e82ea229020e933db1d86c121",
+                "url": "https://api.github.com/repos/avalanche-development/swagger-validation-middleware/zipball/68919d72cc1f43feac7d6270009d0a5cd8f05d70",
+                "reference": "68919d72cc1f43feac7d6270009d0a5cd8f05d70",
                 "shasum": ""
             },
             "require": {
@@ -256,7 +256,7 @@
                     "email": "jpemeric@gmail.com"
                 }
             ],
-            "time": "2017-04-10 11:54:35"
+            "time": "2017-04-23 21:25:29"
         },
         {
             "name": "guzzlehttp/psr7",

@@ -12,7 +12,7 @@
         "php": ">=5.6.0",
         "avalanche-development/crash-pad": "^0.5",
         "avalanche-development/peel": "^0.3",
-        "avalanche-development/swagger-caster-middleware": "^0.1",
+        "avalanche-development/swagger-caster-middleware": "^0.2",
         "avalanche-development/swagger-header-middleware": "^0.3",
         "avalanche-development/swagger-router-middleware": "^1.2",
         "avalanche-development/swagger-validation-middleware": "^0.5",
